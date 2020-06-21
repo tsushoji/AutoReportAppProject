@@ -14,10 +14,9 @@ namespace AutoReportWinApp
         [STAThread]
         static void Main()
         {
-            string createDataFilePath = "C:/Users/Shota Tsuji/Desktop/DailyReportData.csv";
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new InputDailyReportForm(createDataFilePath));
+            Application.Run(new InputDailyReportForm());
         }
     }
 }

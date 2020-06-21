@@ -9,17 +9,19 @@ namespace AutoReportWinApp
 {
     class CsvWriter:IDisposable
     {
+        private static readonly string _createDataFilePath = "C:/Users/Shota Tsuji/Desktop/DailyReportData.csv";
         private StreamWriter streamWriter = null;
 
-        public CsvWriter(string path) : this(path, Encoding.Default)
+        public CsvWriter() : this(Encoding.Default)
         {      
         }
 
-        public CsvWriter(string path, Encoding encoding) 
+        public CsvWriter(Encoding encoding) 
         {
-            var fileStream = new FileStream(path, FileMode.Append, FileAccess.Write);
+            var fileStream = new FileStream(CsvWriter.CreateDataFilePath, FileMode.Append, FileAccess.Write);
             streamWriter = new StreamWriter(fileStream, encoding);
         }
+        public static string CreateDataFilePath { get => _createDataFilePath; }
         public void WriteRow (string[] rowArray) 
         {
             var writingLine = string.Join(",", rowArray);
