@@ -52,8 +52,6 @@
     <Compile Include="CalendarForm.Designer.cs">
       <DependentUpon>CalendarForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DailyReport.cs" />
-    <Compile Include="CsvWriter.cs" />
     <Compile Include="InputDailyReportForm.cs">
       <SubType>Form</SubType>
     </Compile>
