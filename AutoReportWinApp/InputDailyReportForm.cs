@@ -76,7 +76,7 @@ namespace AutoReportWinApp
                 return false;
             }
 
-            if (!Regex.IsMatch(inputDate, pattern) || isDate(inputDate)) 
+            if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate)) 
             {
                 MessageBox.Show("正しい形式で日付を入力してください。");
                 return false;
