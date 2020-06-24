@@ -39,7 +39,7 @@ namespace AutoReportWinApp
 
         private void buttonCreateData_Click(object sender, EventArgs e)
         {
-            if (inputcheck(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text)) 
+            if (this.inputcheck(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text)) 
             {
 
                 using (var fileStream = new FileStream(InputDailyReportForm.CreateDataFilePath, FileMode.Append, FileAccess.Write))
@@ -63,40 +63,64 @@ namespace AutoReportWinApp
 
         private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask) 
         {
-            var pattern = "";
-            var returnFlg = true;
+            var pattern = @"\d{4}/\d{2}/\d{2}";
 
             if ((inputDate == null) || (inputDate.Length == 0))
             {
                 MessageBox.Show("日付が入力されていません。");
-                returnFlg = false;
+                return false;
             }
 
-            if (!Regex.IsMatch(inputDate, pattern)) 
+            if (!Regex.IsMatch(inputDate, pattern) || isDate(inputDate)) 
             {
                 MessageBox.Show("正しい形式で日付を入力してください。");
-                returnFlg = false;
+                return false;
             }
 
             if ((inputImpContent == null) || (inputImpContent.Length == 0)) 
             {
                 MessageBox.Show("実施内容が入力されていません。");
-                returnFlg = false;
+                return false;
             }
 
             if ((inputScheContent == null) || (inputScheContent.Length == 0))
             {
                 MessageBox.Show("翌日予定が入力されていません。");
-                returnFlg = false;
+                return false;
             }
 
             if ((inputTask == null) || (inputTask.Length == 0))
             {
                 MessageBox.Show("課題が入力されていません。");
-                returnFlg = false;
+                return false;
             }
 
-            return returnFlg;
+            return true;
+        }
+
+        private Boolean isDate(string dateStr) 
+        {
+            var pattern = '/';
+            string[] dateEleArray = dateStr.Split(pattern);
+            int dateYear = Int32.Parse(dateEleArray[0]);
+            int dateMonth = Int32.Parse(dateEleArray[1]);
+            if (DateTime.MinValue.Year > dateYear || DateTime.MaxValue.Year < dateYear) 
+            {
+                return false;
+            }
+
+            if (DateTime.MinValue.Month > dateMonth || DateTime.MaxValue.Month < dateMonth) 
+            {
+                return false;
+            }
+
+            int dateLastDayNum = DateTime.DaysInMonth(dateYear, dateMonth);
+            if (DateTime.MinValue.Day > Int32.Parse(dateEleArray[2]) || dateLastDayNum < Int32.Parse(dateEleArray[2])) 
+            {
+                return false;
+            }
+
+            return true; 
         }
 
     }
