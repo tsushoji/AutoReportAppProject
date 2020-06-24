@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -37,14 +39,65 @@ namespace AutoReportWinApp
 
         private void buttonCreateData_Click(object sender, EventArgs e)
         {
-            using (var fileStream = new FileStream(InputDailyReportForm.CreateDataFilePath, FileMode.Append, FileAccess.Write))
-            using (var streamWriter = new StreamWriter(fileStream, Encoding.Default))
+            if (inputcheck(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text)) 
             {
-                controlNum++;
-                string[] writingData = { InputDailyReportForm.controlNum.ToString(), this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text };
-                var writingLine = string.Join(",", writingData);
-                streamWriter.WriteLine(writingLine);
+
+                using (var fileStream = new FileStream(InputDailyReportForm.CreateDataFilePath, FileMode.Append, FileAccess.Write))
+                using (var streamWriter = new StreamWriter(fileStream, Encoding.Default))
+                {
+                    var writingList = new List<string>();
+                    controlNum++;
+                    string[] writingData = { InputDailyReportForm.controlNum.ToString(), this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text };
+                    foreach (var writingEle in writingData) 
+                    {
+                        if(writingEle.Contains("\n")){
+                            writingList.Add(writingEle.Replace("\r\n", "@NewLine"));
+                        }else {
+                            writingList.Add(writingEle);
+                        }
+                    }
+                    streamWriter.WriteLine(writingList.Aggregate((i, j)=> i + "," + j));
+                }
             }
         }
+
+        private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask) 
+        {
+            var pattern = "";
+            var returnFlg = true;
+
+            if ((inputDate == null) || (inputDate.Length == 0))
+            {
+                MessageBox.Show("日付が入力されていません。");
+                returnFlg = false;
+            }
+
+            if (!Regex.IsMatch(inputDate, pattern)) 
+            {
+                MessageBox.Show("正しい形式で日付を入力してください。");
+                returnFlg = false;
+            }
+
+            if ((inputImpContent == null) || (inputImpContent.Length == 0)) 
+            {
+                MessageBox.Show("実施内容が入力されていません。");
+                returnFlg = false;
+            }
+
+            if ((inputScheContent == null) || (inputScheContent.Length == 0))
+            {
+                MessageBox.Show("翌日予定が入力されていません。");
+                returnFlg = false;
+            }
+
+            if ((inputTask == null) || (inputTask.Length == 0))
+            {
+                MessageBox.Show("課題が入力されていません。");
+                returnFlg = false;
+            }
+
+            return returnFlg;
+        }
+
     }
 }
