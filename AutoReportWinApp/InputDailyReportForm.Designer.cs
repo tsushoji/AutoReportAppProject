@@ -39,6 +39,7 @@
             this.buttonCalendar = new System.Windows.Forms.Button();
             this.buttonCreate = new System.Windows.Forms.Button();
             this.buttonForMenu = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -55,11 +56,11 @@
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox1.Location = new System.Drawing.Point(100, 85);
+            this.textBox1.Location = new System.Drawing.Point(163, 85);
             this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(395, 27);
+            this.textBox1.Size = new System.Drawing.Size(280, 30);
             this.textBox1.TabIndex = 1;
             // 
             // label2
@@ -76,7 +77,7 @@
             // textBox2
             // 
             this.textBox2.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox2.Location = new System.Drawing.Point(30, 185);
+            this.textBox2.Location = new System.Drawing.Point(163, 133);
             this.textBox2.Margin = new System.Windows.Forms.Padding(2);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
@@ -87,7 +88,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label3.Location = new System.Drawing.Point(25, 349);
+            this.label3.Location = new System.Drawing.Point(25, 299);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(134, 27);
@@ -97,7 +98,7 @@
             // textBox3
             // 
             this.textBox3.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox3.Location = new System.Drawing.Point(30, 404);
+            this.textBox3.Location = new System.Drawing.Point(163, 299);
             this.textBox3.Margin = new System.Windows.Forms.Padding(2);
             this.textBox3.Multiline = true;
             this.textBox3.Name = "textBox3";
@@ -108,7 +109,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label4.Location = new System.Drawing.Point(25, 566);
+            this.label4.Location = new System.Drawing.Point(25, 466);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(80, 27);
@@ -118,7 +119,7 @@
             // textBox4
             // 
             this.textBox4.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox4.Location = new System.Drawing.Point(30, 615);
+            this.textBox4.Location = new System.Drawing.Point(163, 466);
             this.textBox4.Margin = new System.Windows.Forms.Padding(2);
             this.textBox4.Multiline = true;
             this.textBox4.Name = "textBox4";
@@ -127,10 +128,11 @@
             // 
             // buttonCalendar
             // 
+            this.buttonCalendar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonCalendar.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonCalendar.Location = new System.Drawing.Point(512, 85);
+            this.buttonCalendar.Location = new System.Drawing.Point(648, 85);
             this.buttonCalendar.Name = "buttonCalendar";
-            this.buttonCalendar.Size = new System.Drawing.Size(60, 27);
+            this.buttonCalendar.Size = new System.Drawing.Size(60, 30);
             this.buttonCalendar.TabIndex = 8;
             this.buttonCalendar.Text = "カレンダー";
             this.buttonCalendar.UseVisualStyleBackColor = true;
@@ -138,8 +140,9 @@
             // 
             // buttonCreate
             // 
+            this.buttonCreate.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonCreate.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonCreate.Location = new System.Drawing.Point(422, 769);
+            this.buttonCreate.Location = new System.Drawing.Point(556, 630);
             this.buttonCreate.Name = "buttonCreate";
             this.buttonCreate.Size = new System.Drawing.Size(152, 40);
             this.buttonCreate.TabIndex = 9;
@@ -149,19 +152,30 @@
             // 
             // buttonForMenu
             // 
+            this.buttonForMenu.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonForMenu.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonForMenu.Location = new System.Drawing.Point(449, 22);
+            this.buttonForMenu.Location = new System.Drawing.Point(538, 24);
             this.buttonForMenu.Name = "buttonForMenu";
-            this.buttonForMenu.Size = new System.Drawing.Size(130, 40);
+            this.buttonForMenu.Size = new System.Drawing.Size(170, 40);
             this.buttonForMenu.TabIndex = 10;
-            this.buttonForMenu.Text = "メニューへ";
+            this.buttonForMenu.Text = "データリストへ";
             this.buttonForMenu.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label5.Location = new System.Drawing.Point(452, 85);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(190, 30);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "ex)2020/06/24";
             // 
             // InputDailyReportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(604, 831);
+            this.ClientSize = new System.Drawing.Size(744, 711);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.buttonForMenu);
             this.Controls.Add(this.buttonCreate);
             this.Controls.Add(this.buttonCalendar);
@@ -195,6 +209,7 @@
         private System.Windows.Forms.Button buttonCalendar;
         private System.Windows.Forms.Button buttonCreate;
         private System.Windows.Forms.Button buttonForMenu;
+        private System.Windows.Forms.Label label5;
     }
 }
 

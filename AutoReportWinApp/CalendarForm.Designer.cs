@@ -45,6 +45,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(234, 191);
             this.Controls.Add(this.monthCalendar1);
+            this.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "CalendarForm";
             this.Text = "カレンダー";
             this.ResumeLayout(false);
