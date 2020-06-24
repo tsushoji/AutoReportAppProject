@@ -38,7 +38,7 @@
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.buttonCalendar = new System.Windows.Forms.Button();
             this.buttonCreate = new System.Windows.Forms.Button();
-            this.buttonForMenu = new System.Windows.Forms.Button();
+            this.buttonForDataList = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -127,7 +127,7 @@
             this.buttonCalendar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonCalendar.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.buttonCalendar.Location = new System.Drawing.Point(864, 106);
-            this.buttonCalendar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonCalendar.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCalendar.Name = "buttonCalendar";
             this.buttonCalendar.Size = new System.Drawing.Size(80, 38);
             this.buttonCalendar.TabIndex = 8;
@@ -140,7 +140,7 @@
             this.buttonCreate.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonCreate.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.buttonCreate.Location = new System.Drawing.Point(741, 788);
-            this.buttonCreate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonCreate.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCreate.Name = "buttonCreate";
             this.buttonCreate.Size = new System.Drawing.Size(203, 50);
             this.buttonCreate.TabIndex = 9;
@@ -148,17 +148,18 @@
             this.buttonCreate.UseVisualStyleBackColor = true;
             this.buttonCreate.Click += new System.EventHandler(this.buttonCreateData_Click);
             // 
-            // buttonForMenu
+            // buttonForDataList
             // 
-            this.buttonForMenu.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.buttonForMenu.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonForMenu.Location = new System.Drawing.Point(717, 30);
-            this.buttonForMenu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.buttonForMenu.Name = "buttonForMenu";
-            this.buttonForMenu.Size = new System.Drawing.Size(227, 50);
-            this.buttonForMenu.TabIndex = 10;
-            this.buttonForMenu.Text = "データリストへ";
-            this.buttonForMenu.UseVisualStyleBackColor = true;
+            this.buttonForDataList.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonForDataList.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.buttonForDataList.Location = new System.Drawing.Point(717, 30);
+            this.buttonForDataList.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonForDataList.Name = "buttonForDataList";
+            this.buttonForDataList.Size = new System.Drawing.Size(227, 50);
+            this.buttonForDataList.TabIndex = 10;
+            this.buttonForDataList.Text = "データリストへ";
+            this.buttonForDataList.UseVisualStyleBackColor = true;
+            this.buttonForDataList.Click += new System.EventHandler(this.buttonForDataList_Click);
             // 
             // label5
             // 
@@ -176,7 +177,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(992, 889);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.buttonForMenu);
+            this.Controls.Add(this.buttonForDataList);
             this.Controls.Add(this.buttonCreate);
             this.Controls.Add(this.buttonCalendar);
             this.Controls.Add(this.textBox4);
@@ -211,7 +212,7 @@
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Button buttonCalendar;
         private System.Windows.Forms.Button buttonCreate;
-        private System.Windows.Forms.Button buttonForMenu;
+        private System.Windows.Forms.Button buttonForDataList;
         private System.Windows.Forms.Label label5;
     }
 }

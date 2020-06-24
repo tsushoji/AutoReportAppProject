@@ -52,6 +52,12 @@
     <Compile Include="CalendarForm.Designer.cs">
       <DependentUpon>CalendarForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DailyReportDataListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DailyReportDataListForm.Designer.cs">
+      <DependentUpon>DailyReportDataListForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="InputDailyReportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,6 +68,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="CalendarForm.resx">
       <DependentUpon>CalendarForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DailyReportDataListForm.resx">
+      <DependentUpon>DailyReportDataListForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InputDailyReportForm.resx">
       <DependentUpon>InputDailyReportForm.cs</DependentUpon>

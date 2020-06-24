@@ -61,6 +61,11 @@ namespace AutoReportWinApp
             }
         }
 
+        private void buttonForDataList_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask) 
         {
             var pattern = @"\d{4}/\d{2}/\d{2}";
