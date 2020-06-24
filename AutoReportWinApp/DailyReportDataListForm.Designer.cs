@@ -62,7 +62,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(788, 288);
+            this.dataGridView1.Size = new System.Drawing.Size(900, 280);
             this.dataGridView1.TabIndex = 0;
             // 
             // controlNum
@@ -70,41 +70,41 @@
             this.controlNum.HeaderText = "管理番号";
             this.controlNum.MinimumWidth = 6;
             this.controlNum.Name = "controlNum";
-            this.controlNum.Width = 125;
+            this.controlNum.Width = 80;
             // 
             // date
             // 
             this.date.HeaderText = "日付";
             this.date.MinimumWidth = 6;
             this.date.Name = "date";
-            this.date.Width = 125;
+            this.date.Width = 135;
             // 
             // impContent
             // 
             this.impContent.HeaderText = "実施内容";
             this.impContent.MinimumWidth = 6;
             this.impContent.Name = "impContent";
-            this.impContent.Width = 125;
+            this.impContent.Width = 135;
             // 
             // scheContent
             // 
             this.scheContent.HeaderText = "翌日予定";
             this.scheContent.MinimumWidth = 6;
             this.scheContent.Name = "scheContent";
-            this.scheContent.Width = 125;
+            this.scheContent.Width = 135;
             // 
             // task
             // 
             this.task.HeaderText = "課題";
             this.task.MinimumWidth = 6;
             this.task.Name = "task";
-            this.task.Width = 125;
+            this.task.Width = 135;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label4.Location = new System.Drawing.Point(340, 357);
+            this.label4.Location = new System.Drawing.Point(447, 357);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(162, 25);
             this.label4.TabIndex = 1;
@@ -114,7 +114,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label5.Location = new System.Drawing.Point(340, 402);
+            this.label5.Location = new System.Drawing.Point(447, 402);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(175, 25);
             this.label5.TabIndex = 2;
@@ -124,7 +124,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label6.Location = new System.Drawing.Point(668, 402);
+            this.label6.Location = new System.Drawing.Point(780, 402);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(143, 25);
             this.label6.TabIndex = 3;
@@ -154,7 +154,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label7.Location = new System.Drawing.Point(340, 448);
+            this.label7.Location = new System.Drawing.Point(447, 448);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(328, 25);
             this.label7.TabIndex = 6;
@@ -183,7 +183,7 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button2.Location = new System.Drawing.Point(345, 488);
+            this.button2.Location = new System.Drawing.Point(452, 488);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(130, 40);
             this.button2.TabIndex = 9;
@@ -202,7 +202,7 @@
             // textBox2
             // 
             this.textBox2.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox2.Location = new System.Drawing.Point(521, 399);
+            this.textBox2.Location = new System.Drawing.Point(641, 399);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(130, 30);
@@ -211,7 +211,7 @@
             // buttonForInputDailyReport
             // 
             this.buttonForInputDailyReport.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonForInputDailyReport.Location = new System.Drawing.Point(613, 9);
+            this.buttonForInputDailyReport.Location = new System.Drawing.Point(723, 9);
             this.buttonForInputDailyReport.Name = "buttonForInputDailyReport";
             this.buttonForInputDailyReport.Size = new System.Drawing.Size(200, 40);
             this.buttonForInputDailyReport.TabIndex = 12;
@@ -223,7 +223,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(832, 553);
+            this.ClientSize = new System.Drawing.Size(952, 553);
             this.Controls.Add(this.buttonForInputDailyReport);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
