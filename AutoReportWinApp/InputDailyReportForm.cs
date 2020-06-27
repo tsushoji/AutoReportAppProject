@@ -14,20 +14,29 @@ using System.Windows.Forms;
 
 namespace AutoReportWinApp
 {
+    public enum CreateDataMode 
+    {
+        APPEND,
+        UPDATE
+    }
     public partial class InputDailyReportForm : Form
     {
-        public static int controlNum = 0;
-        private static readonly string _createDataFilePath = "C:/Users/Shota Tsuji/Desktop/DailyReportData.csv";
+        private DailyReportDataListForm _dailyReportDataListForm;
+        private CreateDataMode _createDataMode;
+        private Dictionary<int, DailyReport> _csvDailyReportDataMap;
+        private int _createDataUpdateColNum;
         public InputDailyReportForm()
         {
             InitializeComponent();
+            this._csvDailyReportDataMap = new Dictionary<int, DailyReport>();
         }
-        public static string CreateDataFilePath { get => _createDataFilePath; }
-
-        private void InputDailyReportForm_Load(object sender, EventArgs e)
-        {
-
-        }
+        public DailyReportDataListForm DailyReportDataListForm { get => _dailyReportDataListForm; set => _dailyReportDataListForm = value; }
+        public CreateDataMode CreateDataMode { get => _createDataMode; set => _createDataMode = value; }
+        public int CreateDataUpdateColNum { get => _createDataUpdateColNum; set => _createDataUpdateColNum = value; }
+        public string TextBox1Text { get => this.textBox1.Text; set => this.textBox1.Text = value; }
+        public string TextBox2Text { get => this.textBox2.Text; set => this.textBox2.Text = value; }
+        public string TextBox3Text { get => this.textBox3.Text; set => this.textBox3.Text = value; }
+        public string TextBox4Text { get => this.textBox4.Text; set => this.textBox4.Text = value; }
 
         private void buttonCalendar_Click(object sender, EventArgs e)
         {
@@ -41,22 +50,15 @@ namespace AutoReportWinApp
         {
             if (this.inputcheck(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text)) 
             {
-
-                using (var fileStream = new FileStream(InputDailyReportForm.CreateDataFilePath, FileMode.Append, FileAccess.Write))
-                using (var streamWriter = new StreamWriter(fileStream, Encoding.Default))
+                switch (this.CreateDataMode) 
                 {
-                    var writingList = new List<string>();
-                    controlNum++;
-                    string[] writingData = { InputDailyReportForm.controlNum.ToString(), this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text };
-                    foreach (var writingEle in writingData) 
-                    {
-                        if(writingEle.Contains("\n")){
-                            writingList.Add(writingEle.Replace("\r\n", "@NewLine"));
-                        }else {
-                            writingList.Add(writingEle);
-                        }
-                    }
-                    streamWriter.WriteLine(writingList.Aggregate((i, j)=> i + "," + j));
+                    case CreateDataMode.APPEND:
+                        this.createDataAppend();
+                        break;
+
+                    case CreateDataMode.UPDATE:
+                        this.createDataUpdate();
+                        break;
                 }
             }
         }
@@ -66,37 +68,109 @@ namespace AutoReportWinApp
             this.Close();
         }
 
+        private void createDataAppend() 
+        {
+            using (var fileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Append, FileAccess.Write))
+            using (var streamWriter = new StreamWriter(fileStream, Encoding.Default))
+            {
+                var writingList = new List<string>();
+                string[] writingData = { this.DailyReportDataListForm.CreateDataColNum.ToString(), this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text };
+                foreach (var writingEle in writingData)
+                {
+                    if (writingEle.Contains(AppConstants.NewLineStr))
+                    {
+                        writingList.Add(writingEle.Replace(AppConstants.NewLineStr, AppConstants.UserNewLineStr));
+                    }
+                    else
+                    {
+                        writingList.Add(writingEle);
+                    }
+                }
+                streamWriter.WriteLine(writingList.Aggregate((i, j) => i + "," + j));
+                this.DailyReportDataListForm.CreateDataColNum++;
+            }
+            MessageBox.Show(AppConstants.CreateDataAppendCmpMsg);
+            this.Close();
+        }
+
+        private void createDataUpdate()
+        {
+            if (File.Exists(StartMenuForm.CreateDataFilePath))
+            {
+                using (var readFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Open, FileAccess.Read))
+                using (var streamReader = new StreamReader(readFileStream, Encoding.Default))
+                {
+                    var rowNumIndex = 0;
+                    while (streamReader.Peek() >= 0)
+                    {
+                        var dailyReport = new DailyReport();
+                        string readingLine = streamReader.ReadLine();
+                        string[] rowArray = readingLine.Split(',');
+                        int rowConNum = Int32.Parse(rowArray[0]);
+                        dailyReport.ControlNum = rowConNum;
+                        dailyReport.CsvDailyReportLine = readingLine;
+                        this._csvDailyReportDataMap.Add(rowNumIndex, dailyReport);
+                        rowNumIndex++;
+                    }
+                }
+
+                File.Delete(StartMenuForm.CreateDataFilePath);
+
+                using (var writeFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Create, FileAccess.Write))
+                using (var streamWriter = new StreamWriter(writeFileStream, Encoding.Default))
+                {
+                    foreach (KeyValuePair<int, DailyReport> keyValuePair in this._csvDailyReportDataMap)
+                    {
+                        if (keyValuePair.Value.ControlNum == this.CreateDataUpdateColNum) 
+                        {
+                            string[] writingData = { keyValuePair.Value.ControlNum.ToString(), this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text };
+                            keyValuePair.Value.CsvDailyReportLine = string.Join(",",writingData);
+                        }
+
+                        if (keyValuePair.Value.CsvDailyReportLine.Contains("\n"))
+                        {
+                            keyValuePair.Value.CsvDailyReportLine = keyValuePair.Value.CsvDailyReportLine.Replace(AppConstants.NewLineStr, AppConstants.UserNewLineStr);
+                        }
+                        streamWriter.WriteLine(keyValuePair.Value.CsvDailyReportLine);
+                    }
+                }
+
+                MessageBox.Show(AppConstants.CreateDataUpdateCmpMsg);
+                this.Close();
+            }
+        }
+
         private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask) 
         {
-            var pattern = @"\d{4}/\d{2}/\d{2}";
+            var pattern = AppConstants.DateRegExp;
 
             if ((inputDate == null) || (inputDate.Length == 0))
             {
-                MessageBox.Show("日付が入力されていません。");
+                MessageBox.Show(AppConstants.NotInputDateMsg);
                 return false;
             }
 
             if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate)) 
             {
-                MessageBox.Show("正しい形式で日付を入力してください。");
+                MessageBox.Show(AppConstants.NotInputDateFormatMsg);
                 return false;
             }
 
             if ((inputImpContent == null) || (inputImpContent.Length == 0)) 
             {
-                MessageBox.Show("実施内容が入力されていません。");
+                MessageBox.Show(AppConstants.NotInputImpContentMsg);
                 return false;
             }
 
             if ((inputScheContent == null) || (inputScheContent.Length == 0))
             {
-                MessageBox.Show("翌日予定が入力されていません。");
+                MessageBox.Show(AppConstants.NotInputSchContentMsg);
                 return false;
             }
 
             if ((inputTask == null) || (inputTask.Length == 0))
             {
-                MessageBox.Show("課題が入力されていません。");
+                MessageBox.Show(AppConstants.NotInputTaskMsg);
                 return false;
             }
 
@@ -105,7 +179,7 @@ namespace AutoReportWinApp
 
         private Boolean isDate(string dateStr) 
         {
-            var pattern = '/';
+            var pattern = AppConstants.DateFormatCheckSeparate;
             string[] dateEleArray = dateStr.Split(pattern);
             int dateYear = Int32.Parse(dateEleArray[0]);
             int dateMonth = Int32.Parse(dateEleArray[1]);
@@ -128,5 +202,9 @@ namespace AutoReportWinApp
             return true; 
         }
 
+        private void InputDailyReportForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.DailyReportDataListForm.initDailyReportDataReader(StartMenuForm.CreateDataFilePath);
+        }
     }
 }

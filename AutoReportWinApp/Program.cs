@@ -16,7 +16,7 @@ namespace AutoReportWinApp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DailyReportDataListForm());
+            Application.Run(new StartMenuForm());
         }
     }
 }
