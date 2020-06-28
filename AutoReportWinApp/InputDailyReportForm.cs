@@ -86,7 +86,7 @@ namespace AutoReportWinApp
                         writingList.Add(writingEle);
                     }
                 }
-                streamWriter.WriteLine(writingList.Aggregate((i, j) => i + "," + j));
+                streamWriter.WriteLine(writingList.Aggregate((i, j) => i + AppConstants.CreateDataAppendSeparate + j));
                 this.DailyReportDataListForm.CreateDataColNum++;
             }
             MessageBox.Show(AppConstants.CreateDataAppendCmpMsg);
@@ -143,38 +143,52 @@ namespace AutoReportWinApp
         private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask) 
         {
             var pattern = AppConstants.DateRegExp;
+            var errorMsgEleList = new List<string>();
+            var errorMsg = new StringBuilder();
+            Boolean rtnFlag = true;
 
             if ((inputDate == null) || (inputDate.Length == 0))
             {
-                MessageBox.Show(AppConstants.NotInputDateMsg);
-                return false;
-            }
-
-            if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate)) 
-            {
-                MessageBox.Show(AppConstants.NotInputDateFormatMsg);
-                return false;
+                errorMsgEleList.Add(AppConstants.NotInputDateMsgEle);
             }
 
             if ((inputImpContent == null) || (inputImpContent.Length == 0)) 
             {
-                MessageBox.Show(AppConstants.NotInputImpContentMsg);
-                return false;
+                errorMsgEleList.Add(AppConstants.NotInputImpContentMsgEle);
             }
 
             if ((inputScheContent == null) || (inputScheContent.Length == 0))
             {
-                MessageBox.Show(AppConstants.NotInputSchContentMsg);
-                return false;
+                errorMsgEleList.Add(AppConstants.NotInputSchContentMsgEle);
             }
 
             if ((inputTask == null) || (inputTask.Length == 0))
             {
-                MessageBox.Show(AppConstants.NotInputTaskMsg);
-                return false;
+                errorMsgEleList.Add(AppConstants.NotInputTaskMsgEle);
             }
 
-            return true;
+            if (errorMsgEleList.Count > 0) 
+            {
+                string errorPartialMsg = errorMsgEleList.Aggregate((i, j) => i + AppConstants.NotInputCheckItemMsgSeparate + j);
+                errorMsg.Append(errorPartialMsg).Append(AppConstants.NotInputCheckItemMsgEnd);
+            }
+
+            if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate))
+            {
+                if (errorMsg.Length > 0) 
+                {
+                    errorMsg.Append(AppConstants.NewLineStr);
+                }
+                errorMsg.Append(AppConstants.NotInputDateFormatMsg);
+            }
+
+            if (errorMsg.Length > 0) 
+            {
+                MessageBox.Show(errorMsg.ToString());
+                rtnFlag = false;
+            }
+
+            return rtnFlag;
         }
 
         private Boolean isDate(string dateStr) 
