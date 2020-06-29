@@ -48,6 +48,28 @@ namespace AutoReportWinApp
 
         private void buttonCreateData_Click(object sender, EventArgs e)
         {
+            this._csvDailyReportDataMap.Clear();
+
+            if (File.Exists(StartMenuForm.CreateDataFilePath)) 
+            {
+                using (var readFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Open, FileAccess.Read))
+                using (var streamReader = new StreamReader(readFileStream, Encoding.Default))
+                {
+                    var rowNumIndex = 0;
+                    while (streamReader.Peek() >= 0)
+                    {
+                        var dailyReport = new DailyReport();
+                        string readingLine = streamReader.ReadLine();
+                        string[] rowArray = readingLine.Split(AppConstants.DailyReportDataLineSeparate);
+                        int rowConNum = Int32.Parse(rowArray[0]);
+                        dailyReport.ControlNum = rowConNum;
+                        dailyReport.CsvDailyReportLine = readingLine;
+                        this._csvDailyReportDataMap.Add(rowNumIndex, dailyReport);
+                        rowNumIndex++;
+                    }
+                }
+            }
+
             if (this.inputcheck(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text)) 
             {
                 switch (this.CreateDataMode) 
@@ -97,23 +119,6 @@ namespace AutoReportWinApp
         {
             if (File.Exists(StartMenuForm.CreateDataFilePath))
             {
-                using (var readFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Open, FileAccess.Read))
-                using (var streamReader = new StreamReader(readFileStream, Encoding.Default))
-                {
-                    var rowNumIndex = 0;
-                    while (streamReader.Peek() >= 0)
-                    {
-                        var dailyReport = new DailyReport();
-                        string readingLine = streamReader.ReadLine();
-                        string[] rowArray = readingLine.Split(',');
-                        int rowConNum = Int32.Parse(rowArray[0]);
-                        dailyReport.ControlNum = rowConNum;
-                        dailyReport.CsvDailyReportLine = readingLine;
-                        this._csvDailyReportDataMap.Add(rowNumIndex, dailyReport);
-                        rowNumIndex++;
-                    }
-                }
-
                 File.Delete(StartMenuForm.CreateDataFilePath);
 
                 using (var writeFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Create, FileAccess.Write))
@@ -182,6 +187,15 @@ namespace AutoReportWinApp
                 errorMsg.Append(AppConstants.NotInputDateFormatMsg);
             }
 
+            if (!DuplicateCheck(inputDate, this._csvDailyReportDataMap))
+            {
+                if (errorMsg.Length > 0)
+                {
+                    errorMsg.Append(AppConstants.NewLineStr);
+                }
+                errorMsg.Append(AppConstants.DuplicateDailyReportDataMsg);
+            }
+
             if (errorMsg.Length > 0) 
             {
                 MessageBox.Show(errorMsg.ToString());
@@ -215,7 +229,24 @@ namespace AutoReportWinApp
 
             return true; 
         }
+        private Boolean DuplicateCheck(string dateStr, Dictionary<int, DailyReport> dailyReportData)
+        {
+            Boolean rtnFlag = true;
 
+            if (dailyReportData.Count > 0) 
+            {
+                foreach (KeyValuePair<int, DailyReport> keyValuePair in dailyReportData)
+                {
+                    string[] dailyReportDataEle = keyValuePair.Value.CsvDailyReportLine.Split(AppConstants.DailyReportDataLineSeparate);
+                    if (dateStr.Equals(dailyReportDataEle[1]))
+                    {
+                        rtnFlag = false;
+                        break;
+                    }
+                }
+            }
+            return rtnFlag;
+        }
         private void InputDailyReportForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             this.DailyReportDataListForm.initDailyReportDataReader(StartMenuForm.CreateDataFilePath);

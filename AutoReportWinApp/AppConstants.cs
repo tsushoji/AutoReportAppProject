@@ -8,6 +8,7 @@ namespace AutoReportWinApp
 {
     class AppConstants
     {
+        public static readonly char DailyReportDataLineSeparate = ',';
         public static readonly char DateFormatCheckSeparate = '/';
         public static readonly int CreateDataFirstColNum = 1;
         public static readonly string DateFormat = "yyyy/MM/dd";
@@ -22,6 +23,7 @@ namespace AutoReportWinApp
         public static readonly string NotInputSchContentMsgEle = "翌日予定";     
         public static readonly string NotInputTaskMsgEle = "課題";
         public static readonly string NotInputCheckItemMsgEnd = "が入力されていません";
+        public static readonly string DuplicateDailyReportDataMsg = "日報データが重複しています。";
         public static readonly string CreateDataAppendSeparate = ",";
         public static readonly string CreateDataAppendCmpMsg = "日報データを追加しました。";
         public static readonly string CreateDataUpdateCmpMsg = "日報データを更新しました。";
