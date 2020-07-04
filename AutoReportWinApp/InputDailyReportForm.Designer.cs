@@ -105,7 +105,7 @@
             this.label4.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label4.Location = new System.Drawing.Point(33, 467);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(100, 34);
+            this.label4.Size = new System.Drawing.Size(80, 27);
             this.label4.TabIndex = 6;
             this.label4.Text = "課題：";
             // 
@@ -124,7 +124,7 @@
             this.buttonCalendar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonCalendar.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.buttonCalendar.Location = new System.Drawing.Point(856, 23);
-            this.buttonCalendar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonCalendar.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCalendar.Name = "buttonCalendar";
             this.buttonCalendar.Size = new System.Drawing.Size(130, 40);
             this.buttonCalendar.TabIndex = 8;
@@ -136,8 +136,8 @@
             // 
             this.buttonCreate.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonCreate.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonCreate.Location = new System.Drawing.Point(781, 661);
-            this.buttonCreate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonCreate.Location = new System.Drawing.Point(531, 664);
+            this.buttonCreate.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCreate.Name = "buttonCreate";
             this.buttonCreate.Size = new System.Drawing.Size(203, 50);
             this.buttonCreate.TabIndex = 9;
@@ -149,8 +149,8 @@
             // 
             this.buttonForDataList.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonForDataList.Font = new System.Drawing.Font("MS UI Gothic", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonForDataList.Location = new System.Drawing.Point(522, 661);
-            this.buttonForDataList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonForDataList.Location = new System.Drawing.Point(754, 664);
+            this.buttonForDataList.Margin = new System.Windows.Forms.Padding(4);
             this.buttonForDataList.Name = "buttonForDataList";
             this.buttonForDataList.Size = new System.Drawing.Size(230, 50);
             this.buttonForDataList.TabIndex = 10;
