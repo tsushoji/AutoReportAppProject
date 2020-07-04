@@ -64,13 +64,16 @@
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(900, 325);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.upDailyReport_CellClick);
+            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.upDailyReport_CellDoubleClick);
+            this.dataGridView1.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.colorChange_Enter);
+            this.dataGridView1.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.colorChange_Leave);
             // 
             // controlNum
             // 
             this.controlNum.HeaderText = "管理番号";
             this.controlNum.MinimumWidth = 6;
             this.controlNum.Name = "controlNum";
+            this.controlNum.ReadOnly = true;
             this.controlNum.Width = 80;
             // 
             // date
@@ -107,7 +110,7 @@
             this.label4.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label4.Location = new System.Drawing.Point(447, 358);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(162, 25);
+            this.label4.Size = new System.Drawing.Size(129, 20);
             this.label4.TabIndex = 1;
             this.label4.Text = "週報出力項目";
             // 
@@ -117,7 +120,7 @@
             this.label5.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label5.Location = new System.Drawing.Point(447, 402);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(175, 25);
+            this.label5.Size = new System.Drawing.Size(139, 20);
             this.label5.TabIndex = 2;
             this.label5.Text = "対象管理番号：";
             // 
@@ -127,7 +130,7 @@
             this.label6.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label6.Location = new System.Drawing.Point(780, 402);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(143, 25);
+            this.label6.Size = new System.Drawing.Size(110, 20);
             this.label6.TabIndex = 3;
             this.label6.Text = "ex)1,10,8,7,5";
             // 
@@ -137,7 +140,7 @@
             this.label1.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label1.Location = new System.Drawing.Point(19, 358);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(162, 25);
+            this.label1.Size = new System.Drawing.Size(129, 20);
             this.label1.TabIndex = 4;
             this.label1.Text = "日報出力項目";
             // 
@@ -147,7 +150,7 @@
             this.label2.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label2.Location = new System.Drawing.Point(19, 402);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(175, 25);
+            this.label2.Size = new System.Drawing.Size(139, 20);
             this.label2.TabIndex = 5;
             this.label2.Text = "対象管理番号：";
             // 
@@ -157,7 +160,7 @@
             this.label7.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label7.Location = new System.Drawing.Point(447, 448);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(328, 25);
+            this.label7.Size = new System.Drawing.Size(261, 20);
             this.label7.TabIndex = 6;
             this.label7.Text = "※1～5つの管理番号選択可能";
             // 
@@ -167,7 +170,7 @@
             this.label3.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label3.Location = new System.Drawing.Point(19, 448);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(290, 25);
+            this.label3.Size = new System.Drawing.Size(231, 20);
             this.label3.TabIndex = 7;
             this.label3.Text = "※1つの管理番号選択可能";
             // 
@@ -244,11 +247,6 @@
         #endregion
 
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn controlNum;
-        private System.Windows.Forms.DataGridViewTextBoxColumn date;
-        private System.Windows.Forms.DataGridViewTextBoxColumn impContent;
-        private System.Windows.Forms.DataGridViewTextBoxColumn scheContent;
-        private System.Windows.Forms.DataGridViewTextBoxColumn task;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
@@ -260,5 +258,10 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn controlNum;
+        private System.Windows.Forms.DataGridViewTextBoxColumn date;
+        private System.Windows.Forms.DataGridViewTextBoxColumn impContent;
+        private System.Windows.Forms.DataGridViewTextBoxColumn scheContent;
+        private System.Windows.Forms.DataGridViewTextBoxColumn task;
     }
 }

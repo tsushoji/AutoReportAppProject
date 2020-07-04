@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace AutoReportWinApp
 {
-    public enum CreateDataMode 
+    public enum CreateDataMode
     {
         APPEND,
         UPDATE
@@ -40,7 +40,7 @@ namespace AutoReportWinApp
 
         private void buttonCalendar_Click(object sender, EventArgs e)
         {
-            using(var calendarForm = new CalendarForm(this))
+            using (var calendarForm = new CalendarForm(this))
             {
                 calendarForm.ShowDialog();
             }
@@ -50,7 +50,7 @@ namespace AutoReportWinApp
         {
             this._csvDailyReportDataMap.Clear();
 
-            if (File.Exists(StartMenuForm.CreateDataFilePath)) 
+            if (File.Exists(StartMenuForm.CreateDataFilePath))
             {
                 using (var readFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Open, FileAccess.Read))
                 using (var streamReader = new StreamReader(readFileStream, Encoding.Default))
@@ -70,9 +70,9 @@ namespace AutoReportWinApp
                 }
             }
 
-            if (this.inputcheck(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text)) 
+            if (this.inputcheck(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text))
             {
-                switch (this.CreateDataMode) 
+                switch (this.CreateDataMode)
                 {
                     case CreateDataMode.APPEND:
                         this.createDataAppend();
@@ -90,7 +90,7 @@ namespace AutoReportWinApp
             this.Close();
         }
 
-        private void createDataAppend() 
+        private void createDataAppend()
         {
             using (var fileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Append, FileAccess.Write))
             using (var streamWriter = new StreamWriter(fileStream, Encoding.Default))
@@ -126,10 +126,10 @@ namespace AutoReportWinApp
                 {
                     foreach (KeyValuePair<int, DailyReport> keyValuePair in this._csvDailyReportDataMap)
                     {
-                        if (keyValuePair.Value.ControlNum == this.CreateDataUpdateColNum) 
+                        if (keyValuePair.Value.ControlNum == this.CreateDataUpdateColNum)
                         {
                             string[] writingData = { keyValuePair.Value.ControlNum.ToString(), this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text };
-                            keyValuePair.Value.CsvDailyReportLine = string.Join(",",writingData);
+                            keyValuePair.Value.CsvDailyReportLine = string.Join(",", writingData);
                         }
 
                         if (keyValuePair.Value.CsvDailyReportLine.Contains("\n"))
@@ -145,7 +145,7 @@ namespace AutoReportWinApp
             }
         }
 
-        private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask) 
+        private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask)
         {
             var pattern = AppConstants.DateRegExp;
             var errorMsgEleList = new List<string>();
@@ -157,7 +157,7 @@ namespace AutoReportWinApp
                 errorMsgEleList.Add(AppConstants.NotInputDateMsgEle);
             }
 
-            if ((inputImpContent == null) || (inputImpContent.Length == 0)) 
+            if ((inputImpContent == null) || (inputImpContent.Length == 0))
             {
                 errorMsgEleList.Add(AppConstants.NotInputImpContentMsgEle);
             }
@@ -172,7 +172,7 @@ namespace AutoReportWinApp
                 errorMsgEleList.Add(AppConstants.NotInputTaskMsgEle);
             }
 
-            if (errorMsgEleList.Count > 0) 
+            if (errorMsgEleList.Count > 0)
             {
                 string errorPartialMsg = errorMsgEleList.Aggregate((i, j) => i + AppConstants.NotInputCheckItemMsgSeparate + j);
                 errorMsg.Append(errorPartialMsg).Append(AppConstants.NotInputCheckItemMsgEnd);
@@ -180,7 +180,7 @@ namespace AutoReportWinApp
 
             if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate))
             {
-                if (errorMsg.Length > 0) 
+                if (errorMsg.Length > 0)
                 {
                     errorMsg.Append(AppConstants.NewLineStr);
                 }
@@ -196,7 +196,7 @@ namespace AutoReportWinApp
                 errorMsg.Append(AppConstants.DuplicateDailyReportDataMsg);
             }
 
-            if (errorMsg.Length > 0) 
+            if (errorMsg.Length > 0)
             {
                 MessageBox.Show(errorMsg.ToString());
                 rtnFlag = false;
@@ -205,35 +205,35 @@ namespace AutoReportWinApp
             return rtnFlag;
         }
 
-        private Boolean isDate(string dateStr) 
+        private Boolean isDate(string dateStr)
         {
             var pattern = AppConstants.DateFormatCheckSeparate;
             string[] dateEleArray = dateStr.Split(pattern);
             int dateYear = Int32.Parse(dateEleArray[0]);
             int dateMonth = Int32.Parse(dateEleArray[1]);
-            if (DateTime.MinValue.Year > dateYear || DateTime.MaxValue.Year < dateYear) 
+            if (DateTime.MinValue.Year > dateYear || DateTime.MaxValue.Year < dateYear)
             {
                 return false;
             }
 
-            if (DateTime.MinValue.Month > dateMonth || DateTime.MaxValue.Month < dateMonth) 
+            if (DateTime.MinValue.Month > dateMonth || DateTime.MaxValue.Month < dateMonth)
             {
                 return false;
             }
 
             int dateLastDayNum = DateTime.DaysInMonth(dateYear, dateMonth);
-            if (DateTime.MinValue.Day > Int32.Parse(dateEleArray[2]) || dateLastDayNum < Int32.Parse(dateEleArray[2])) 
+            if (DateTime.MinValue.Day > Int32.Parse(dateEleArray[2]) || dateLastDayNum < Int32.Parse(dateEleArray[2]))
             {
                 return false;
             }
 
-            return true; 
+            return true;
         }
         private Boolean DuplicateCheck(string dateStr, Dictionary<int, DailyReport> dailyReportData)
         {
             Boolean rtnFlag = true;
 
-            if (dailyReportData.Count > 0) 
+            if (dailyReportData.Count > 0)
             {
                 foreach (KeyValuePair<int, DailyReport> keyValuePair in dailyReportData)
                 {
@@ -250,6 +250,7 @@ namespace AutoReportWinApp
         private void InputDailyReportForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             this.DailyReportDataListForm.initDailyReportDataReader(StartMenuForm.CreateDataFilePath);
+            this.DailyReportDataListForm.DataGridView1.CurrentCell = null;
         }
     }
 }
