@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,20 +14,29 @@ namespace AutoReportWinApp
 {
     public partial class DailyReportDataListForm : Form
     {
-        private StartMenuForm _startMenuForm;
         private DataGridView _dataGridView1;
         internal Dictionary<int, DailyReport> _csvDailyReportDataMap;
+        private string _csvDailyReportDataPath;
         public DailyReportDataListForm()
         {
             InitializeComponent();
             DataGridView1 = this.dataGridView1;
             this._csvDailyReportDataMap = new Dictionary<int, DailyReport>();
-            this.initDailyReportDataReader(StartMenuForm.CreateDataFilePath);
+            CsvDailyReportDataPath = this.csvDailyReportDataPathGet();
+            this.initDailyReportDataReader(CsvDailyReportDataPath);
         }
 
-        public StartMenuForm StartMenuForm { get => _startMenuForm; set => _startMenuForm = value; }
         public DataGridView DataGridView1 { get => _dataGridView1; set => _dataGridView1 = value; }
-        public void initDailyReportDataReader(string createDataFilePath) 
+        public string CsvDailyReportDataPath { get => _csvDailyReportDataPath; set => _csvDailyReportDataPath = value; }
+        private string csvDailyReportDataPathGet() 
+        {
+            Assembly myAssembly = Assembly.GetEntryAssembly();
+            string exeFilePath = myAssembly.Location;
+            string directoryName = System.IO.Path.GetDirectoryName(exeFilePath);
+            string path = directoryName + AppConstants.CsvDailyReportDataPathEnd;
+            return path;
+        }
+        private void initDailyReportDataReader(string createDataFilePath) 
         {
             if (File.Exists(createDataFilePath))
             {
@@ -50,7 +60,6 @@ namespace AutoReportWinApp
                 }
             }
         }
-
         private string replaceRow(string row) 
         {
             if (row.Contains(AppConstants.UserNewLineStr))
@@ -108,12 +117,6 @@ namespace AutoReportWinApp
             this.dataGridView1.CurrentCell = null;
             this.dataGridView1.RowHeadersVisible = false;
         }
-
-        private void DailyReportDataListForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            StartMenuForm.Close();
-        }
-
         private void colorChange_Leave(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0) 

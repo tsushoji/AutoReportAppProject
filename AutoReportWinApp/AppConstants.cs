@@ -11,6 +11,7 @@ namespace AutoReportWinApp
         public static readonly char DailyReportDataLineSeparateChar = ',';
         public static readonly char DateFormatCheckSeparate = '/';
         public static readonly int CreateReportDataColNumFirst = 1;
+        public static readonly string CsvDailyReportDataPathEnd = @"\data\data.csv";
         public static readonly string DailyReportDataLineSeparateStr = ",";
         public static readonly string DateFormat = "yyyy/MM/dd";
         public static readonly string DateRegExp = @"^\d{4}/\d{2}/\d{2}$";

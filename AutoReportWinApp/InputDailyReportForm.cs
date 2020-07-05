@@ -68,7 +68,7 @@ namespace AutoReportWinApp
 
         private void createDataAppend()
         {
-            using (var fileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Append, FileAccess.Write))
+            using (var fileStream = new FileStream(DailyReportDataListForm.CsvDailyReportDataPath, FileMode.Append, FileAccess.Write))
             using (var streamWriter = new StreamWriter(fileStream, Encoding.Default))
             {
                 var dailyReport = new DailyReport();
@@ -99,11 +99,11 @@ namespace AutoReportWinApp
 
         private void createDataUpdate()
         {
-            if (File.Exists(StartMenuForm.CreateDataFilePath))
+            if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
             {
-                File.Delete(StartMenuForm.CreateDataFilePath);
+                File.Delete(DailyReportDataListForm.CsvDailyReportDataPath);
 
-                using (var writeFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Create, FileAccess.Write))
+                using (var writeFileStream = new FileStream(DailyReportDataListForm.CsvDailyReportDataPath, FileMode.Create, FileAccess.Write))
                 using (var streamWriter = new StreamWriter(writeFileStream, Encoding.Default))
                 {
                     foreach (KeyValuePair<int, DailyReport> keyValuePair in DailyReportDataListForm._csvDailyReportDataMap)
