@@ -225,6 +225,11 @@ namespace AutoReportWinApp
             {
                 foreach (KeyValuePair<int, DailyReport> keyValuePair in dailyReportData)
                 {
+                    if (keyValuePair.Value.ControlNum == CreateDataColNum) 
+                    {
+                        continue;
+                    }
+
                     string[] dailyReportDataEle = keyValuePair.Value.CsvDailyReportLine.Split(AppConstants.DailyReportDataLineSeparateChar);
                     if (dateStr.Equals(dailyReportDataEle[1]))
                     {
