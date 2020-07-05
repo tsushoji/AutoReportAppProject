@@ -8,9 +8,10 @@ namespace AutoReportWinApp
 {
     class AppConstants
     {
-        public static readonly char DailyReportDataLineSeparate = ',';
+        public static readonly char DailyReportDataLineSeparateChar = ',';
         public static readonly char DateFormatCheckSeparate = '/';
-        public static readonly int CreateDataFirstColNum = 1;
+        public static readonly int CreateReportDataColNumFirst = 1;
+        public static readonly string DailyReportDataLineSeparateStr = ",";
         public static readonly string DateFormat = "yyyy/MM/dd";
         public static readonly string DateRegExp = @"^\d{4}/\d{2}/\d{2}$";
         public static readonly string NewLineStr = "\r\n";
@@ -27,5 +28,6 @@ namespace AutoReportWinApp
         public static readonly string CreateDataAppendSeparate = ",";
         public static readonly string CreateDataAppendCmpMsg = "日報データを追加しました。";
         public static readonly string CreateDataUpdateCmpMsg = "日報データを更新しました。";
+        public static readonly string InputCalenderDataPassFormItemNameStr = "textBox1";
     }
 }

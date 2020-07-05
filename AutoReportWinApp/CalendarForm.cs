@@ -21,7 +21,7 @@ namespace AutoReportWinApp
 
         private void mousePointer_DataSelected(object sender, DateRangeEventArgs e)
         {
-            inputDailyReportForm.Controls["textBox1"].Text = this.monthCalendar1.SelectionRange.Start.Date.ToString(AppConstants.DateFormat);
+            inputDailyReportForm.Controls[AppConstants.InputCalenderDataPassFormItemNameStr].Text = this.monthCalendar1.SelectionRange.Start.Date.ToString(AppConstants.DateFormat);
             this.Close();
         }
     }

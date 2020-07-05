@@ -14,36 +14,40 @@ namespace AutoReportWinApp
     public partial class DailyReportDataListForm : Form
     {
         private StartMenuForm _startMenuForm;
-        private int _createDataColNum = AppConstants.CreateDataFirstColNum;
         private DataGridView _dataGridView1;
+        internal Dictionary<int, DailyReport> _csvDailyReportDataMap;
         public DailyReportDataListForm()
         {
             InitializeComponent();
-            this.DataGridView1 = this.dataGridView1;
+            DataGridView1 = this.dataGridView1;
+            this._csvDailyReportDataMap = new Dictionary<int, DailyReport>();
             this.initDailyReportDataReader(StartMenuForm.CreateDataFilePath);
         }
 
         public StartMenuForm StartMenuForm { get => _startMenuForm; set => _startMenuForm = value; }
-        public int CreateDataColNum { get => _createDataColNum; set => _createDataColNum = value; }
         public DataGridView DataGridView1 { get => _dataGridView1; set => _dataGridView1 = value; }
         public void initDailyReportDataReader(string createDataFilePath) 
         {
             if (File.Exists(createDataFilePath))
             {
-                var colNumList = new List<int>();
-                this.DataGridView1.Rows.Clear();
-
                 using (var fileStream = new FileStream(createDataFilePath, FileMode.Open, FileAccess.Read))
                 using (var streamReader = new StreamReader(fileStream, Encoding.Default))
                 {
+                    var rowNumIndex = 0;
+                    var dailyReport = new DailyReport();
+
                     while (streamReader.Peek() >= 0)
                     {
-                        string[] cols = streamReader.ReadLine().Split(',');
-                        this.DataGridView1.Rows.Add(cols[0], cols[1], this.replaceRow(cols[2]), this.replaceRow(cols[3]), this.replaceRow(cols[4]));
-                        colNumList.Add(Int32.Parse(cols[0]));
+                        string readingLine = streamReader.ReadLine();
+                        string[] cols = readingLine.Split(AppConstants.DailyReportDataLineSeparateChar);
+                        int rowConNum = Int32.Parse(cols[0]);
+                        dailyReport.ControlNum = rowConNum;
+                        dailyReport.CsvDailyReportLine = readingLine;
+                        this._csvDailyReportDataMap.Add(rowNumIndex, dailyReport);
+                        DataGridView1.Rows.Add(cols[0], cols[1], this.replaceRow(cols[2]), this.replaceRow(cols[3]), this.replaceRow(cols[4]));
+                        rowNumIndex++;
                     }
                 }
-                this.CreateDataColNum = colNumList.Max() + 1;
             }
         }
 
@@ -64,11 +68,19 @@ namespace AutoReportWinApp
                 {
                     inputDailyReportForm.DailyReportDataListForm = this;
                     inputDailyReportForm.CreateDataMode = CreateDataMode.APPEND;
-
+                    if (this._csvDailyReportDataMap.Count > 0)
+                    {
+                        inputDailyReportForm.CreateDataColNum = this.maxColNumGet(this._csvDailyReportDataMap) + 1;
+                    }
+                    else 
+                    {
+                        inputDailyReportForm.CreateDataColNum = AppConstants.CreateReportDataColNumFirst;
+                    }
+                    
                     if (e.RowIndex != this.DataGridView1.Rows.Count - 1) 
                     {
                         inputDailyReportForm.CreateDataMode = CreateDataMode.UPDATE;
-                        inputDailyReportForm.CreateDataUpdateColNum = Int32.Parse(this.DataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString());
+                        inputDailyReportForm.CreateDataColNum = Int32.Parse(this.DataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString());
                         inputDailyReportForm.TextBox1Text = this.DataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
                         inputDailyReportForm.TextBox2Text = this.DataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
                         inputDailyReportForm.TextBox3Text = this.DataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString();
@@ -80,6 +92,16 @@ namespace AutoReportWinApp
             }
         }
 
+        private int maxColNumGet(Dictionary<int, DailyReport> dataReportMap)
+        {
+            var colNumList = new List<int>();
+            foreach (KeyValuePair<int, DailyReport> keyValuePair in dataReportMap)
+            {
+                colNumList.Add(keyValuePair.Value.ControlNum);
+            }
+            return colNumList.Max();
+        }
+
         private void DailyReportDataListForm_Load(object sender, EventArgs e)
         {
             this.Activate();
@@ -89,19 +111,19 @@ namespace AutoReportWinApp
 
         private void DailyReportDataListForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.StartMenuForm.Close();
+            StartMenuForm.Close();
         }
 
         private void colorChange_Leave(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0) 
             {
-                this.DataGridView1.Cursor = Cursors.Default;
-                this.DataGridView1.CurrentCell = null;
-                for (var i = 0; i < this.DataGridView1.Columns.Count; i++) 
+                DataGridView1.Cursor = Cursors.Default;
+                DataGridView1.CurrentCell = null;
+                for (var i = 0; i < DataGridView1.Columns.Count; i++) 
                 {
-                    this.DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = Color.Empty;
-                    this.DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = Color.Empty;
+                    DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = Color.Empty;
+                    DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = Color.Empty;
                 }
             }
         }
@@ -110,12 +132,12 @@ namespace AutoReportWinApp
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0)
             {
-                this.DataGridView1.Cursor = Cursors.Hand;
-                this.DataGridView1.CurrentCell = null;
-                for (var i = 0; i < this.DataGridView1.Columns.Count; i++)
+                DataGridView1.Cursor = Cursors.Hand;
+                DataGridView1.CurrentCell = null;
+                for (var i = 0; i < DataGridView1.Columns.Count; i++)
                 {
-                    this.DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = Color.Yellow;
-                    this.DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = Color.Yellow;
+                    DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = Color.Yellow;
+                    DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = Color.Yellow;
                 }
             }
         }

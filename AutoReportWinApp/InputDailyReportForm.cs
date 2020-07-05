@@ -23,16 +23,14 @@ namespace AutoReportWinApp
     {
         private DailyReportDataListForm _dailyReportDataListForm;
         private CreateDataMode _createDataMode;
-        private Dictionary<int, DailyReport> _csvDailyReportDataMap;
-        private int _createDataUpdateColNum;
+        private int _createDataColNum;
         public InputDailyReportForm()
         {
             InitializeComponent();
-            this._csvDailyReportDataMap = new Dictionary<int, DailyReport>();
         }
         public DailyReportDataListForm DailyReportDataListForm { get => _dailyReportDataListForm; set => _dailyReportDataListForm = value; }
         public CreateDataMode CreateDataMode { get => _createDataMode; set => _createDataMode = value; }
-        public int CreateDataUpdateColNum { get => _createDataUpdateColNum; set => _createDataUpdateColNum = value; }
+        public int CreateDataColNum { get => _createDataColNum; set => _createDataColNum = value; }
         public string TextBox1Text { get => this.textBox1.Text; set => this.textBox1.Text = value; }
         public string TextBox2Text { get => this.textBox2.Text; set => this.textBox2.Text = value; }
         public string TextBox3Text { get => this.textBox3.Text; set => this.textBox3.Text = value; }
@@ -48,31 +46,9 @@ namespace AutoReportWinApp
 
         private void buttonCreateData_Click(object sender, EventArgs e)
         {
-            this._csvDailyReportDataMap.Clear();
-
-            if (File.Exists(StartMenuForm.CreateDataFilePath))
+            if (this.inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
             {
-                using (var readFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Open, FileAccess.Read))
-                using (var streamReader = new StreamReader(readFileStream, Encoding.Default))
-                {
-                    var rowNumIndex = 0;
-                    while (streamReader.Peek() >= 0)
-                    {
-                        var dailyReport = new DailyReport();
-                        string readingLine = streamReader.ReadLine();
-                        string[] rowArray = readingLine.Split(AppConstants.DailyReportDataLineSeparate);
-                        int rowConNum = Int32.Parse(rowArray[0]);
-                        dailyReport.ControlNum = rowConNum;
-                        dailyReport.CsvDailyReportLine = readingLine;
-                        this._csvDailyReportDataMap.Add(rowNumIndex, dailyReport);
-                        rowNumIndex++;
-                    }
-                }
-            }
-
-            if (this.inputcheck(this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text))
-            {
-                switch (this.CreateDataMode)
+                switch (CreateDataMode)
                 {
                     case CreateDataMode.APPEND:
                         this.createDataAppend();
@@ -95,8 +71,10 @@ namespace AutoReportWinApp
             using (var fileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Append, FileAccess.Write))
             using (var streamWriter = new StreamWriter(fileStream, Encoding.Default))
             {
+                var dailyReport = new DailyReport();
                 var writingList = new List<string>();
-                string[] writingData = { this.DailyReportDataListForm.CreateDataColNum.ToString(), this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text };
+                string[] writingData = { CreateDataColNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
+                DailyReportDataListForm.DataGridView1.Rows.Add(writingData[0], writingData[1], writingData[2], writingData[3], writingData[4]);
                 foreach (var writingEle in writingData)
                 {
                     if (writingEle.Contains(AppConstants.NewLineStr))
@@ -108,8 +86,12 @@ namespace AutoReportWinApp
                         writingList.Add(writingEle);
                     }
                 }
-                streamWriter.WriteLine(writingList.Aggregate((i, j) => i + AppConstants.CreateDataAppendSeparate + j));
-                this.DailyReportDataListForm.CreateDataColNum++;
+                string writingLine = writingList.Aggregate((i, j) => i + AppConstants.CreateDataAppendSeparate + j);
+                streamWriter.WriteLine(writingLine);
+                dailyReport.ControlNum = CreateDataColNum;
+                dailyReport.CsvDailyReportLine = writingLine;
+                DailyReportDataListForm._csvDailyReportDataMap.Add(DailyReportDataListForm._csvDailyReportDataMap.Count, dailyReport);
+                CreateDataColNum++;
             }
             MessageBox.Show(AppConstants.CreateDataAppendCmpMsg);
             this.Close();
@@ -124,15 +106,21 @@ namespace AutoReportWinApp
                 using (var writeFileStream = new FileStream(StartMenuForm.CreateDataFilePath, FileMode.Create, FileAccess.Write))
                 using (var streamWriter = new StreamWriter(writeFileStream, Encoding.Default))
                 {
-                    foreach (KeyValuePair<int, DailyReport> keyValuePair in this._csvDailyReportDataMap)
+                    foreach (KeyValuePair<int, DailyReport> keyValuePair in DailyReportDataListForm._csvDailyReportDataMap)
                     {
-                        if (keyValuePair.Value.ControlNum == this.CreateDataUpdateColNum)
+                        if (keyValuePair.Value.ControlNum == CreateDataColNum)
                         {
-                            string[] writingData = { keyValuePair.Value.ControlNum.ToString(), this.textBox1.Text, this.textBox2.Text, this.textBox3.Text, this.textBox4.Text };
-                            keyValuePair.Value.CsvDailyReportLine = string.Join(",", writingData);
+                            string[] writingData = { keyValuePair.Value.ControlNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
+                            
+                            for (var i = 0; i < writingData.Length; i++) 
+                            {
+                                DailyReportDataListForm.DataGridView1.Rows[keyValuePair.Key].Cells[i].Value = writingData[i];
+                            }
+                            
+                            keyValuePair.Value.CsvDailyReportLine = string.Join(AppConstants.DailyReportDataLineSeparateStr, writingData);
                         }
 
-                        if (keyValuePair.Value.CsvDailyReportLine.Contains("\n"))
+                        if (keyValuePair.Value.CsvDailyReportLine.Contains(AppConstants.NewLineStr))
                         {
                             keyValuePair.Value.CsvDailyReportLine = keyValuePair.Value.CsvDailyReportLine.Replace(AppConstants.NewLineStr, AppConstants.UserNewLineStr);
                         }
@@ -187,7 +175,7 @@ namespace AutoReportWinApp
                 errorMsg.Append(AppConstants.NotInputDateFormatMsg);
             }
 
-            if (!DuplicateCheck(inputDate, this._csvDailyReportDataMap))
+            if (!DuplicateCheck(inputDate, this.DailyReportDataListForm._csvDailyReportDataMap))
             {
                 if (errorMsg.Length > 0)
                 {
@@ -237,7 +225,7 @@ namespace AutoReportWinApp
             {
                 foreach (KeyValuePair<int, DailyReport> keyValuePair in dailyReportData)
                 {
-                    string[] dailyReportDataEle = keyValuePair.Value.CsvDailyReportLine.Split(AppConstants.DailyReportDataLineSeparate);
+                    string[] dailyReportDataEle = keyValuePair.Value.CsvDailyReportLine.Split(AppConstants.DailyReportDataLineSeparateChar);
                     if (dateStr.Equals(dailyReportDataEle[1]))
                     {
                         rtnFlag = false;
@@ -249,8 +237,7 @@ namespace AutoReportWinApp
         }
         private void InputDailyReportForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.DailyReportDataListForm.initDailyReportDataReader(StartMenuForm.CreateDataFilePath);
-            this.DailyReportDataListForm.DataGridView1.CurrentCell = null;
+            DailyReportDataListForm.DataGridView1.CurrentCell = null;
         }
     }
 }
