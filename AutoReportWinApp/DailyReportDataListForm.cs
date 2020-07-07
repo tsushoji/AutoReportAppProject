@@ -59,6 +59,10 @@ namespace AutoReportWinApp
                     }
                 }
             }
+            else 
+            {
+                File.Create(createDataFilePath).Close();
+            }
         }
         private string replaceRow(string row) 
         {
@@ -142,6 +146,61 @@ namespace AutoReportWinApp
                     DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = Color.Yellow;
                     DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = Color.Yellow;
                 }
+            }
+        }
+
+        private void buttonFolderDialog_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
+            {
+                dialog.SelectedPath = AppConstants.FolderDialogBoxInitSelected;
+                dialog.Description = AppConstants.FolderDialogBoxExplation;
+                dialog.ShowNewFolderButton = true;
+
+                DialogResult result = dialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    string selectedPath = dialog.SelectedPath;
+                    this.textBox1.Text = selectedPath;
+                }
+            }
+        }
+
+        private void buttonDailyReportDataOutput_Click(object sender, EventArgs e)
+        {
+            if (System.IO.Directory.Exists(this.textBox1.Text))
+            {
+                Boolean appendFlg = false;
+                string outputPath = this.textBox1.Text + AppConstants.OutputFilePathEnd;
+                string outputDailyReportDataCompMsg = AppConstants.OutputDailyReportDataCompMsg;
+                if (File.Exists(outputPath))
+                {
+                    DialogResult dialogResult = MessageBox.Show(AppConstants.AppendOutputFileDialogBoxMsg, AppConstants.AppendOutputFileDialogBoxTitle, MessageBoxButtons.YesNo);
+                    if (dialogResult == System.Windows.Forms.DialogResult.No)
+                    {
+                        MessageBox.Show(AppConstants.CancelMsg);
+                        this.textBox1.ResetText();
+                        return;
+                    }
+                    else if (dialogResult == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        outputDailyReportDataCompMsg = AppConstants.OutputDailyReportDataAppendCompMsg;
+                        appendFlg = true;
+                    }
+                    else
+                    {
+                        this.textBox1.ResetText();
+                        return;
+                    }
+                }
+
+                File.Copy(CsvDailyReportDataPath, outputPath, appendFlg);
+                MessageBox.Show(outputDailyReportDataCompMsg);
+                this.textBox1.ResetText();
+            }
+            else 
+            {
+                MessageBox.Show(AppConstants.NotOutputFolderPathMsg);
             }
         }
     }
