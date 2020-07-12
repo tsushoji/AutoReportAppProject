@@ -130,11 +130,9 @@ namespace AutoReportWinApp
         {
             DataGridView1.Cursor = cursor;
             DataGridView1.CurrentCell = null;
-            for (var i = 0; i < DataGridView1.Columns.Count; i++)
-            {
-                DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = color;
-                DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = color;
-            }
+            var dataGridViewRowStyle = DataGridView1.Rows[e.RowIndex].DefaultCellStyle;
+            dataGridViewRowStyle.BackColor = color;
+            dataGridViewRowStyle.SelectionBackColor = color;
         }
         private void buttonFolderDialog_Click(object sender, EventArgs e)
         {
