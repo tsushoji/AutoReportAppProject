@@ -61,6 +61,11 @@ namespace AutoReportWinApp
             }
             else 
             {
+                string createDataDirectoryPath = System.IO.Path.GetDirectoryName(createDataFilePath);
+                if (!System.IO.Directory.Exists(createDataDirectoryPath)) 
+                {
+                    Directory.CreateDirectory(createDataDirectoryPath);
+                }
                 File.Create(createDataFilePath).Close();
             }
         }
