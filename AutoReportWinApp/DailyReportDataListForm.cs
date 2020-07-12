@@ -121,34 +121,16 @@ namespace AutoReportWinApp
             this.dataGridView1.CurrentCell = null;
             this.dataGridView1.RowHeadersVisible = false;
         }
-        private void colorChange_Leave(object sender, DataGridViewCellEventArgs e)
+        private void ChangeDataGridViewStyle(DataGridViewCellEventArgs e, Color color, Cursor cursor)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex != 0) 
+            DataGridView1.Cursor = cursor;
+            DataGridView1.CurrentCell = null;
+            for (var i = 0; i < DataGridView1.Columns.Count; i++)
             {
-                DataGridView1.Cursor = Cursors.Default;
-                DataGridView1.CurrentCell = null;
-                for (var i = 0; i < DataGridView1.Columns.Count; i++) 
-                {
-                    DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = Color.Empty;
-                    DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = Color.Empty;
-                }
+                DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = color;
+                DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = color;
             }
         }
-
-        private void colorChange_Enter(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0 && e.ColumnIndex != 0)
-            {
-                DataGridView1.Cursor = Cursors.Hand;
-                DataGridView1.CurrentCell = null;
-                for (var i = 0; i < DataGridView1.Columns.Count; i++)
-                {
-                    DataGridView1.Rows[e.RowIndex].Cells[i].Style.BackColor = Color.Yellow;
-                    DataGridView1.Rows[e.RowIndex].Cells[i].Style.SelectionBackColor = Color.Yellow;
-                }
-            }
-        }
-
         private void buttonFolderDialog_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
@@ -201,6 +183,22 @@ namespace AutoReportWinApp
             else 
             {
                 MessageBox.Show(AppConstants.NotOutputFolderPathMsg);
+            }
+        }
+
+        private void upDailyReport_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex != 0)
+            {
+                ChangeDataGridViewStyle(e, Color.Yellow, Cursors.Hand);
+            }
+        }
+
+        private void upDailyReport_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex != 0)
+            {
+                ChangeDataGridViewStyle(e, Color.Empty, Cursors.Default);
             }
         }
     }
