@@ -35,6 +35,10 @@ namespace AutoReportWinApp
         public string TextBox2Text { get => this.textBox2.Text; set => this.textBox2.Text = value; }
         public string TextBox3Text { get => this.textBox3.Text; set => this.textBox3.Text = value; }
         public string TextBox4Text { get => this.textBox4.Text; set => this.textBox4.Text = value; }
+        public string Label1Text { get => this.label1.Text; }
+        public string Label2Text { get => this.label2.Text; }
+        public string Label3Text { get => this.label3.Text; }
+        public string Label4Text { get => this.label4.Text; }
 
         private void buttonCalendar_Click(object sender, EventArgs e)
         {
@@ -135,29 +139,33 @@ namespace AutoReportWinApp
 
         private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask)
         {
+            var NotInputDateMsgEle = Label1Text.Substring(0, 2);
+            var NotInputImpContentMsgEle = Label2Text.Substring(0, 4);
+            var NotInputSchContentMsgEle = Label3Text.Substring(0, 4);
+            var NotInputTaskMsgEle = Label4Text.Substring(0, 2);
             var pattern = AppConstants.DateRegExp;
             var errorMsgEleList = new List<string>();
             var errorMsg = new StringBuilder();
             Boolean rtnFlag = true;
 
-            if ((inputDate == null) || (inputDate.Length == 0))
+            if (string.IsNullOrEmpty(inputDate))
             {
-                errorMsgEleList.Add(AppConstants.NotInputDateMsgEle);
+                errorMsgEleList.Add(NotInputDateMsgEle);
             }
 
-            if ((inputImpContent == null) || (inputImpContent.Length == 0))
+            if (string.IsNullOrEmpty(inputImpContent))
             {
-                errorMsgEleList.Add(AppConstants.NotInputImpContentMsgEle);
+                errorMsgEleList.Add(NotInputImpContentMsgEle);
             }
 
-            if ((inputScheContent == null) || (inputScheContent.Length == 0))
+            if (string.IsNullOrEmpty(inputScheContent))
             {
-                errorMsgEleList.Add(AppConstants.NotInputSchContentMsgEle);
+                errorMsgEleList.Add(NotInputSchContentMsgEle);
             }
 
-            if ((inputTask == null) || (inputTask.Length == 0))
+            if (string.IsNullOrEmpty(inputTask))
             {
-                errorMsgEleList.Add(AppConstants.NotInputTaskMsgEle);
+                errorMsgEleList.Add(NotInputTaskMsgEle);
             }
 
             if (errorMsgEleList.Count > 0)

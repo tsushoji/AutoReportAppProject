@@ -19,11 +19,7 @@ namespace AutoReportWinApp
         public static readonly string UserNewLineStr = "@NewLine";
         public static readonly string NotInputFilePathMsg = "csvデータファイルパスが入力されていません。";
         public static readonly string NotInputCheckItemMsgSeparate = "、";
-        public static readonly string NotInputDateMsgEle = "日付";
         public static readonly string NotInputDateFormatMsg = "正しい形式で日付を入力してください。";
-        public static readonly string NotInputImpContentMsgEle = "実施内容";
-        public static readonly string NotInputSchContentMsgEle = "翌日予定";     
-        public static readonly string NotInputTaskMsgEle = "課題";
         public static readonly string NotInputCheckItemMsgEnd = "が入力されていません";
         public static readonly string DuplicateDailyReportDataMsg = "日報データが重複しています。";
         public static readonly string CreateDataAppendSeparate = ",";
