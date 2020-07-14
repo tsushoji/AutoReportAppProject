@@ -81,23 +81,23 @@ namespace AutoReportWinApp
                 DailyReportDataListForm.DataGridView1.Rows.Add(writingData[0], writingData[1], writingData[2], writingData[3], writingData[4]);
                 foreach (var writingEle in writingData)
                 {
-                    if (writingEle.Contains(AppConstants.NewLineStr))
+                    if (writingEle.Contains(SpecialStr.AppConstants.NewLineStr))
                     {
-                        writingList.Add(writingEle.Replace(AppConstants.NewLineStr, AppConstants.UserNewLineStr));
+                        writingList.Add(writingEle.Replace(SpecialStr.AppConstants.NewLineStr, SetValue.AppConstants.UserNewLineStr));
                     }
                     else
                     {
                         writingList.Add(writingEle);
                     }
                 }
-                string writingLine = writingList.Aggregate((i, j) => i + AppConstants.CreateDataAppendSeparate + j);
+                string writingLine = writingList.Aggregate((i, j) => i + SpecialStr.AppConstants.CommaStr + j);
                 streamWriter.WriteLine(writingLine);
                 dailyReport.ControlNum = CreateDataColNum;
                 dailyReport.CsvDailyReportLine = writingLine;
                 DailyReportDataListForm._csvDailyReportDataMap.Add(DailyReportDataListForm._csvDailyReportDataMap.Count, dailyReport);
                 CreateDataColNum++;
             }
-            MessageBox.Show(AppConstants.CreateDataAppendCmpMsg);
+            MessageBox.Show(Base.AppConstants.CreateDataAppendCmpMsg);
             this.Close();
         }
 
@@ -121,18 +121,18 @@ namespace AutoReportWinApp
                                 DailyReportDataListForm.DataGridView1.Rows[keyValuePair.Key].Cells[i].Value = writingData[i];
                             }
                             
-                            keyValuePair.Value.CsvDailyReportLine = string.Join(AppConstants.DailyReportDataLineSeparateStr, writingData);
+                            keyValuePair.Value.CsvDailyReportLine = string.Join(SpecialStr.AppConstants.CommaStr, writingData);
                         }
 
-                        if (keyValuePair.Value.CsvDailyReportLine.Contains(AppConstants.NewLineStr))
+                        if (keyValuePair.Value.CsvDailyReportLine.Contains(SpecialStr.AppConstants.NewLineStr))
                         {
-                            keyValuePair.Value.CsvDailyReportLine = keyValuePair.Value.CsvDailyReportLine.Replace(AppConstants.NewLineStr, AppConstants.UserNewLineStr);
+                            keyValuePair.Value.CsvDailyReportLine = keyValuePair.Value.CsvDailyReportLine.Replace(SpecialStr.AppConstants.NewLineStr, SetValue.AppConstants.UserNewLineStr);
                         }
                         streamWriter.WriteLine(keyValuePair.Value.CsvDailyReportLine);
                     }
                 }
 
-                MessageBox.Show(AppConstants.CreateDataUpdateCmpMsg);
+                MessageBox.Show(Base.AppConstants.CreateDataUpdateCmpMsg);
                 this.Close();
             }
         }
@@ -143,7 +143,7 @@ namespace AutoReportWinApp
             var NotInputImpContentMsgEle = Label2Text.Substring(0, 4);
             var NotInputSchContentMsgEle = Label3Text.Substring(0, 4);
             var NotInputTaskMsgEle = Label4Text.Substring(0, 2);
-            var pattern = AppConstants.DateRegExp;
+            var pattern = RegExp.AppConstants.DateRegExp;
             var errorMsgEleList = new List<string>();
             var errorMsg = new StringBuilder();
             Boolean rtnFlag = true;
@@ -170,26 +170,26 @@ namespace AutoReportWinApp
 
             if (errorMsgEleList.Count > 0)
             {
-                string errorPartialMsg = errorMsgEleList.Aggregate((i, j) => i + AppConstants.NotInputCheckItemMsgSeparate + j);
-                errorMsg.Append(errorPartialMsg).Append(AppConstants.NotInputCheckItemMsgEnd);
+                string errorPartialMsg = errorMsgEleList.Aggregate((i, j) => i + SpecialStr.AppConstants.ReadingPointStr + j);
+                errorMsg.Append(errorPartialMsg).Append(Base.AppConstants.NotInputCheckItemMsgEnd);
             }
 
             if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate))
             {
                 if (errorMsg.Length > 0)
                 {
-                    errorMsg.Append(AppConstants.NewLineStr);
+                    errorMsg.Append(SpecialStr.AppConstants.NewLineStr);
                 }
-                errorMsg.Append(AppConstants.NotInputDateFormatMsg);
+                errorMsg.Append(Base.AppConstants.NotInputDateFormatMsg);
             }
 
             if (!DuplicateCheck(inputDate, this.DailyReportDataListForm._csvDailyReportDataMap))
             {
                 if (errorMsg.Length > 0)
                 {
-                    errorMsg.Append(AppConstants.NewLineStr);
+                    errorMsg.Append(SpecialStr.AppConstants.NewLineStr);
                 }
-                errorMsg.Append(AppConstants.DuplicateDailyReportDataMsg);
+                errorMsg.Append(Base.AppConstants.DuplicateDailyReportDataMsg);
             }
 
             if (errorMsg.Length > 0)
@@ -203,7 +203,7 @@ namespace AutoReportWinApp
 
         private Boolean isDate(string dateStr)
         {
-            var pattern = AppConstants.DateFormatCheckSeparate;
+            var pattern = SpecialStr.AppConstants.SlashChar;
             string[] dateEleArray = dateStr.Split(pattern);
             int dateYear = Int32.Parse(dateEleArray[0]);
             int dateMonth = Int32.Parse(dateEleArray[1]);
@@ -238,7 +238,7 @@ namespace AutoReportWinApp
                         continue;
                     }
 
-                    string[] dailyReportDataEle = keyValuePair.Value.CsvDailyReportLine.Split(AppConstants.DailyReportDataLineSeparateChar);
+                    string[] dailyReportDataEle = keyValuePair.Value.CsvDailyReportLine.Split(SpecialStr.AppConstants.CommaChar);
                     if (dateStr.Equals(dailyReportDataEle[1]))
                     {
                         rtnFlag = false;

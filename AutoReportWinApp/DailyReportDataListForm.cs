@@ -33,7 +33,7 @@ namespace AutoReportWinApp
             Assembly myAssembly = Assembly.GetEntryAssembly();
             string exeFilePath = myAssembly.Location;
             string directoryName = System.IO.Path.GetDirectoryName(exeFilePath);
-            string path = directoryName + AppConstants.CsvDailyReportDataPathEnd;
+            string path = directoryName + SetValue.AppConstants.CsvDailyReportDataPathEnd;
             return path;
         }
         private void initDailyReportDataReader(string createDataFilePath) 
@@ -49,7 +49,7 @@ namespace AutoReportWinApp
                     while (streamReader.Peek() >= 0)
                     {
                         string readingLine = streamReader.ReadLine();
-                        string[] cols = readingLine.Split(AppConstants.DailyReportDataLineSeparateChar);
+                        string[] cols = readingLine.Split(SpecialStr.AppConstants.CommaChar);
                         int rowConNum = Int32.Parse(cols[0]);
                         dailyReport.ControlNum = rowConNum;
                         dailyReport.CsvDailyReportLine = readingLine;
@@ -71,9 +71,9 @@ namespace AutoReportWinApp
         }
         private string replaceRow(string row) 
         {
-            if (row.Contains(AppConstants.UserNewLineStr))
+            if (row.Contains(SetValue.AppConstants.UserNewLineStr))
             {
-                return row.Replace(AppConstants.UserNewLineStr, AppConstants.NewLineStr);
+                return row.Replace(SetValue.AppConstants.UserNewLineStr, SpecialStr.AppConstants.NewLineStr);
             }
             return row;
         }
@@ -92,7 +92,7 @@ namespace AutoReportWinApp
                     }
                     else 
                     {
-                        inputDailyReportForm.CreateDataColNum = AppConstants.CreateReportDataColNumFirst;
+                        inputDailyReportForm.CreateDataColNum = SetValue.AppConstants.CreateReportDataColNumFirst;
                     }
                     
                     if (e.RowIndex != this.DataGridView1.Rows.Count - 1) 
@@ -138,8 +138,8 @@ namespace AutoReportWinApp
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
-                dialog.SelectedPath = AppConstants.FolderDialogBoxInitSelected;
-                dialog.Description = AppConstants.FolderDialogBoxExplation;
+                dialog.SelectedPath = SetValue.AppConstants.FolderDialogBoxInitSelected;
+                dialog.Description = Base.AppConstants.FolderDialogBoxExplation;
                 dialog.ShowNewFolderButton = true;
 
                 DialogResult result = dialog.ShowDialog();
@@ -156,20 +156,20 @@ namespace AutoReportWinApp
             if (System.IO.Directory.Exists(this.textBox1.Text))
             {
                 Boolean appendFlg = false;
-                string outputPath = this.textBox1.Text + AppConstants.OutputFilePathEnd;
-                string outputDailyReportDataCompMsg = AppConstants.OutputDailyReportDataCompMsg;
+                string outputPath = this.textBox1.Text + SetValue.AppConstants.OutputFilePathEnd;
+                string outputDailyReportDataCompMsg = Base.AppConstants.OutputDailyReportDataCompMsg;
                 if (File.Exists(outputPath))
                 {
-                    DialogResult dialogResult = MessageBox.Show(AppConstants.AppendOutputFileDialogBoxMsg, AppConstants.AppendOutputFileDialogBoxTitle, MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show(Base.AppConstants.AppendOutputFileDialogBoxMsg, SetValue.AppConstants.AppendOutputFileDialogBoxTitle, MessageBoxButtons.YesNo);
                     if (dialogResult == System.Windows.Forms.DialogResult.No)
                     {
-                        MessageBox.Show(AppConstants.CancelMsg);
+                        MessageBox.Show(Base.AppConstants.CancelMsg);
                         this.textBox1.ResetText();
                         return;
                     }
                     else if (dialogResult == System.Windows.Forms.DialogResult.Yes)
                     {
-                        outputDailyReportDataCompMsg = AppConstants.OutputDailyReportDataAppendCompMsg;
+                        outputDailyReportDataCompMsg = Base.AppConstants.OutputDailyReportDataAppendCompMsg;
                         appendFlg = true;
                     }
                     else
@@ -185,7 +185,7 @@ namespace AutoReportWinApp
             }
             else 
             {
-                MessageBox.Show(AppConstants.NotOutputFolderPathMsg);
+                MessageBox.Show(Base.AppConstants.NotOutputFolderPathMsg);
             }
         }
 
