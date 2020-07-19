@@ -97,7 +97,7 @@ namespace AutoReportWinApp
                 DailyReportDataListForm._csvDailyReportDataMap.Add(DailyReportDataListForm._csvDailyReportDataMap.Count, dailyReport);
                 CreateDataColNum++;
             }
-            MessageBox.Show(Base.AppConstants.CreateDataAppendCmpMsg);
+            MessageBox.Show(DailyReportDataListForm.Msg.get("I0001"));
             this.Close();
         }
 
@@ -132,7 +132,7 @@ namespace AutoReportWinApp
                     }
                 }
 
-                MessageBox.Show(Base.AppConstants.CreateDataUpdateCmpMsg);
+                MessageBox.Show(DailyReportDataListForm.Msg.get("I0002"));
                 this.Close();
             }
         }
@@ -171,7 +171,7 @@ namespace AutoReportWinApp
             if (errorMsgEleList.Count > 0)
             {
                 string errorPartialMsg = errorMsgEleList.Aggregate((i, j) => i + SpecialStr.AppConstants.ReadingPointStr + j);
-                errorMsg.Append(errorPartialMsg).Append(Base.AppConstants.NotInputCheckItemMsgEnd);
+                errorMsg.Append(DailyReportDataListForm.Msg.get("E0003", errorPartialMsg));
             }
 
             if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate))
@@ -180,7 +180,7 @@ namespace AutoReportWinApp
                 {
                     errorMsg.Append(SpecialStr.AppConstants.NewLineStr);
                 }
-                errorMsg.Append(Base.AppConstants.NotInputDateFormatMsg);
+                errorMsg.Append(DailyReportDataListForm.Msg.get("E0002"));
             }
 
             if (!DuplicateCheck(inputDate, this.DailyReportDataListForm._csvDailyReportDataMap))
@@ -189,7 +189,7 @@ namespace AutoReportWinApp
                 {
                     errorMsg.Append(SpecialStr.AppConstants.NewLineStr);
                 }
-                errorMsg.Append(Base.AppConstants.DuplicateDailyReportDataMsg);
+                errorMsg.Append(DailyReportDataListForm.Msg.get("E0004"));
             }
 
             if (errorMsg.Length > 0)

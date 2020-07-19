@@ -17,17 +17,20 @@ namespace AutoReportWinApp
         private DataGridView _dataGridView1;
         internal Dictionary<int, DailyReport> _csvDailyReportDataMap;
         private string _csvDailyReportDataPath;
+        private Message _msg;
         public DailyReportDataListForm()
         {
             InitializeComponent();
             DataGridView1 = this.dataGridView1;
             this._csvDailyReportDataMap = new Dictionary<int, DailyReport>();
+            Msg = new Message();
             CsvDailyReportDataPath = this.csvDailyReportDataPathGet();
             this.initDailyReportDataReader(CsvDailyReportDataPath);
         }
 
         public DataGridView DataGridView1 { get => _dataGridView1; set => _dataGridView1 = value; }
         public string CsvDailyReportDataPath { get => _csvDailyReportDataPath; set => _csvDailyReportDataPath = value; }
+        public Message Msg { get => _msg; set => _msg = value; }
         private string csvDailyReportDataPathGet() 
         {
             Assembly myAssembly = Assembly.GetEntryAssembly();
@@ -139,7 +142,7 @@ namespace AutoReportWinApp
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
                 dialog.SelectedPath = SetValue.AppConstants.FolderDialogBoxInitSelected;
-                dialog.Description = Base.AppConstants.FolderDialogBoxExplation;
+                dialog.Description = Msg.get("I0006");
                 dialog.ShowNewFolderButton = true;
 
                 DialogResult result = dialog.ShowDialog();
@@ -153,23 +156,29 @@ namespace AutoReportWinApp
 
         private void buttonDailyReportDataOutput_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(this.textBox1.Text)) 
+            {
+                MessageBox.Show(Msg.get("E0001"));
+                return;
+            }
+
             if (System.IO.Directory.Exists(this.textBox1.Text))
             {
                 Boolean appendFlg = false;
                 string outputPath = this.textBox1.Text + SetValue.AppConstants.OutputFilePathEnd;
-                string outputDailyReportDataCompMsg = Base.AppConstants.OutputDailyReportDataCompMsg;
+                string outputDailyReportDataCompMsg = Msg.get("I0003");
                 if (File.Exists(outputPath))
                 {
-                    DialogResult dialogResult = MessageBox.Show(Base.AppConstants.AppendOutputFileDialogBoxMsg, SetValue.AppConstants.AppendOutputFileDialogBoxTitle, MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show(Msg.get("W0001"), SetValue.AppConstants.AppendOutputFileDialogBoxTitle, MessageBoxButtons.YesNo);
                     if (dialogResult == System.Windows.Forms.DialogResult.No)
                     {
-                        MessageBox.Show(Base.AppConstants.CancelMsg);
+                        MessageBox.Show(Msg.get("I0005"));
                         this.textBox1.ResetText();
                         return;
                     }
                     else if (dialogResult == System.Windows.Forms.DialogResult.Yes)
                     {
-                        outputDailyReportDataCompMsg = Base.AppConstants.OutputDailyReportDataAppendCompMsg;
+                        outputDailyReportDataCompMsg = Msg.get("I0004");
                         appendFlg = true;
                     }
                     else
@@ -185,7 +194,7 @@ namespace AutoReportWinApp
             }
             else 
             {
-                MessageBox.Show(Base.AppConstants.NotOutputFolderPathMsg);
+                MessageBox.Show(Msg.get("E0005"));
             }
         }
 
