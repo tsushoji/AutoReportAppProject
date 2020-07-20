@@ -1,8 +1,10 @@
-﻿using System;
+﻿using CsvHelper;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,14 +17,14 @@ namespace AutoReportWinApp
     public partial class DailyReportDataListForm : Form
     {
         private DataGridView _dataGridView1;
-        internal Dictionary<int, DailyReport> _csvDailyReportDataMap;
+        internal Dictionary<int, DailyReportEntity> _csvDailyReportDataMap;
         private string _csvDailyReportDataPath;
         private Message _msg;
         public DailyReportDataListForm()
         {
             InitializeComponent();
             DataGridView1 = this.dataGridView1;
-            this._csvDailyReportDataMap = new Dictionary<int, DailyReport>();
+            this._csvDailyReportDataMap = new Dictionary<int, DailyReportEntity>();
             Msg = new Message();
             CsvDailyReportDataPath = this.csvDailyReportDataPathGet();
             this.initDailyReportDataReader(CsvDailyReportDataPath);
@@ -39,46 +41,34 @@ namespace AutoReportWinApp
             string path = directoryName + SetValue.AppConstants.CsvDailyReportDataPathEnd;
             return path;
         }
-        private void initDailyReportDataReader(string createDataFilePath) 
+        private void initDailyReportDataReader(string createDataFilePath)
         {
             if (File.Exists(createDataFilePath))
             {
-                using (var fileStream = new FileStream(createDataFilePath, FileMode.Open, FileAccess.Read))
-                using (var streamReader = new StreamReader(fileStream, Encoding.Default))
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                using (var reader = new StreamReader(createDataFilePath, Encoding.GetEncoding(SetValue.AppConstants.WinEncoding)))
+                using (var csv = new CsvReader(reader, CultureInfo.CurrentCulture))
                 {
                     var rowNumIndex = 0;
-                    var dailyReport = new DailyReport();
-
-                    while (streamReader.Peek() >= 0)
+                    csv.Configuration.HasHeaderRecord = false; // ヘッダーの有無
+                    var dailyReports = csv.GetRecords<DailyReportEntity>(); // データ読み出し（IEnumerable<Item>として受け取る）
+                    foreach (DailyReportEntity dailyReport in dailyReports) 
                     {
-                        string readingLine = streamReader.ReadLine();
-                        string[] cols = readingLine.Split(SpecialStr.AppConstants.CommaChar);
-                        int rowConNum = Int32.Parse(cols[0]);
-                        dailyReport.ControlNum = rowConNum;
-                        dailyReport.CsvDailyReportLine = readingLine;
+                        DataGridView1.Rows.Add(dailyReport.controlNum, dailyReport.date, DailyReportEntity.replaceToStrWithNewLine(dailyReport.impContent), DailyReportEntity.replaceToStrWithNewLine(dailyReport.schContent), DailyReportEntity.replaceToStrWithNewLine(dailyReport.task));
                         this._csvDailyReportDataMap.Add(rowNumIndex, dailyReport);
-                        DataGridView1.Rows.Add(cols[0], cols[1], this.replaceRow(cols[2]), this.replaceRow(cols[3]), this.replaceRow(cols[4]));
                         rowNumIndex++;
                     }
                 }
             }
-            else 
+            else
             {
                 string createDataDirectoryPath = System.IO.Path.GetDirectoryName(createDataFilePath);
-                if (!System.IO.Directory.Exists(createDataDirectoryPath)) 
+                if (!System.IO.Directory.Exists(createDataDirectoryPath))
                 {
                     Directory.CreateDirectory(createDataDirectoryPath);
                 }
                 File.Create(createDataFilePath).Close();
             }
-        }
-        private string replaceRow(string row) 
-        {
-            if (row.Contains(SetValue.AppConstants.UserNewLineStr))
-            {
-                return row.Replace(SetValue.AppConstants.UserNewLineStr, SpecialStr.AppConstants.NewLineStr);
-            }
-            return row;
         }
 
         private void upDailyReport_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -112,13 +102,14 @@ namespace AutoReportWinApp
                 }
             }
         }
-
-        private int maxColNumGet(Dictionary<int, DailyReport> dataReportMap)
+        private int maxColNumGet(Dictionary<int, DailyReportEntity> dataReportMap)
         {
             var colNumList = new List<int>();
-            foreach (KeyValuePair<int, DailyReport> keyValuePair in dataReportMap)
+            int controlNum = 0;
+            foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in dataReportMap)
             {
-                colNumList.Add(keyValuePair.Value.ControlNum);
+                controlNum = Int32.Parse(keyValuePair.Value.controlNum);
+                colNumList.Add(controlNum);
             }
             return colNumList.Max();
         }

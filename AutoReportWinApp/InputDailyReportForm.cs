@@ -1,9 +1,11 @@
-﻿using System;
+﻿using CsvHelper;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -72,35 +74,32 @@ namespace AutoReportWinApp
 
         private void createDataAppend()
         {
-            using (var fileStream = new FileStream(DailyReportDataListForm.CsvDailyReportDataPath, FileMode.Append, FileAccess.Write))
-            using (var streamWriter = new StreamWriter(fileStream, Encoding.Default))
+            if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
             {
-                var dailyReport = new DailyReport();
-                var writingList = new List<string>();
-                string[] writingData = { CreateDataColNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
-                DailyReportDataListForm.DataGridView1.Rows.Add(writingData[0], writingData[1], writingData[2], writingData[3], writingData[4]);
-                foreach (var writingEle in writingData)
+                File.Delete(DailyReportDataListForm.CsvDailyReportDataPath);
+                using (var writeFileStream = new FileStream(DailyReportDataListForm.CsvDailyReportDataPath, FileMode.Create, FileAccess.Write))
+                using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(SetValue.AppConstants.WinEncoding)))
+                using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    if (writingEle.Contains(SpecialStr.AppConstants.NewLineStr))
+                    var dailyReport = new DailyReportEntity();
+                    DailyReportDataListForm.DataGridView1.Rows.Add(CreateDataColNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text);
+                    dailyReport.controlNum = CreateDataColNum.ToString();
+                    dailyReport.date = TextBox1Text;
+                    dailyReport.impContent = DailyReportEntity.replaceToStrWithUserNewLine(TextBox2Text);
+                    dailyReport.schContent = DailyReportEntity.replaceToStrWithUserNewLine(TextBox3Text);
+                    dailyReport.task = DailyReportEntity.replaceToStrWithUserNewLine(TextBox4Text);
+                    DailyReportDataListForm._csvDailyReportDataMap.Add(DailyReportDataListForm._csvDailyReportDataMap.Count, dailyReport);
+                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePairt in DailyReportDataListForm._csvDailyReportDataMap)
                     {
-                        writingList.Add(writingEle.Replace(SpecialStr.AppConstants.NewLineStr, SetValue.AppConstants.UserNewLineStr));
+                        csv.WriteRecord(keyValuePairt.Value);
+                        csv.NextRecord();
                     }
-                    else
-                    {
-                        writingList.Add(writingEle);
-                    }
+                    CreateDataColNum++;
                 }
-                string writingLine = writingList.Aggregate((i, j) => i + SpecialStr.AppConstants.CommaStr + j);
-                streamWriter.WriteLine(writingLine);
-                dailyReport.ControlNum = CreateDataColNum;
-                dailyReport.CsvDailyReportLine = writingLine;
-                DailyReportDataListForm._csvDailyReportDataMap.Add(DailyReportDataListForm._csvDailyReportDataMap.Count, dailyReport);
-                CreateDataColNum++;
             }
             MessageBox.Show(DailyReportDataListForm.Msg.get("I0001"));
             this.Close();
         }
-
         private void createDataUpdate()
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
@@ -108,27 +107,30 @@ namespace AutoReportWinApp
                 File.Delete(DailyReportDataListForm.CsvDailyReportDataPath);
 
                 using (var writeFileStream = new FileStream(DailyReportDataListForm.CsvDailyReportDataPath, FileMode.Create, FileAccess.Write))
-                using (var streamWriter = new StreamWriter(writeFileStream, Encoding.Default))
+                using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(SetValue.AppConstants.WinEncoding)))
+                using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    foreach (KeyValuePair<int, DailyReport> keyValuePair in DailyReportDataListForm._csvDailyReportDataMap)
+                    int controlNum;
+                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm._csvDailyReportDataMap)
                     {
-                        if (keyValuePair.Value.ControlNum == CreateDataColNum)
+                        controlNum = Int32.Parse(keyValuePair.Value.controlNum);
+                        if (controlNum == CreateDataColNum)
                         {
-                            string[] writingData = { keyValuePair.Value.ControlNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
+                            string[] writingData = { CreateDataColNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
                             
                             for (var i = 0; i < writingData.Length; i++) 
                             {
                                 DailyReportDataListForm.DataGridView1.Rows[keyValuePair.Key].Cells[i].Value = writingData[i];
                             }
-                            
-                            keyValuePair.Value.CsvDailyReportLine = string.Join(SpecialStr.AppConstants.CommaStr, writingData);
-                        }
 
-                        if (keyValuePair.Value.CsvDailyReportLine.Contains(SpecialStr.AppConstants.NewLineStr))
-                        {
-                            keyValuePair.Value.CsvDailyReportLine = keyValuePair.Value.CsvDailyReportLine.Replace(SpecialStr.AppConstants.NewLineStr, SetValue.AppConstants.UserNewLineStr);
+                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].controlNum = CreateDataColNum.ToString();
+                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].date = DailyReportEntity.replaceToStrWithUserNewLine(TextBox1Text);
+                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].impContent = DailyReportEntity.replaceToStrWithUserNewLine(TextBox2Text);
+                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].schContent = DailyReportEntity.replaceToStrWithUserNewLine(TextBox3Text);
+                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].task = DailyReportEntity.replaceToStrWithUserNewLine(TextBox4Text);
                         }
-                        streamWriter.WriteLine(keyValuePair.Value.CsvDailyReportLine);
+                        csv.WriteRecord(keyValuePair.Value);
+                        csv.NextRecord();
                     }
                 }
 
@@ -225,21 +227,19 @@ namespace AutoReportWinApp
 
             return true;
         }
-        private Boolean DuplicateCheck(string dateStr, Dictionary<int, DailyReport> dailyReportData)
+        private Boolean DuplicateCheck(string dateStr, Dictionary<int, DailyReportEntity> dailyReportData)
         {
             Boolean rtnFlag = true;
 
             if (dailyReportData.Count > 0)
             {
-                foreach (KeyValuePair<int, DailyReport> keyValuePair in dailyReportData)
+                foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in dailyReportData)
                 {
-                    if (keyValuePair.Value.ControlNum == CreateDataColNum) 
+                    if (Int32.Parse(keyValuePair.Value.controlNum) == CreateDataColNum) 
                     {
                         continue;
                     }
-
-                    string[] dailyReportDataEle = keyValuePair.Value.CsvDailyReportLine.Split(SpecialStr.AppConstants.CommaChar);
-                    if (dateStr.Equals(dailyReportDataEle[1]))
+                    if (dateStr.Equals(keyValuePair.Value.date))
                     {
                         rtnFlag = false;
                         break;

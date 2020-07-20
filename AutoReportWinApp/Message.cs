@@ -13,8 +13,8 @@ namespace AutoReportWinApp
         private readonly string notReadDataMsg = "メッセージ設定ファイルを対象パスに配置してください。";
         private readonly string notReadDataMsgID = "メッセージ設定ファイルにメッセージIDがありません。";
         private readonly string notReadDataMsgArgs = "メッセージIDの引数が設定されていません。";
-        private readonly string SettingMsgPathEnd = @"\setting\Message.txt";
-        private readonly string ReplaceArgsFirst = "{ARGFIRST}";
+        private readonly string SettingMsgPathEnd = @"\setting\Message.csv";
+        private readonly string ReplaceArgsFirst = "{0}";
         public Message()
 		{
             string SettingMsgPath = this.getSettingMsgPathPath();
@@ -35,7 +35,6 @@ namespace AutoReportWinApp
                 using (var streamReader = new StreamReader(fileStream, Encoding.Default))
                 {
                     var rowNumIndex = 0;
-                    var dailyReport = new DailyReport();
 
                     while (streamReader.Peek() >= 0)
                     {

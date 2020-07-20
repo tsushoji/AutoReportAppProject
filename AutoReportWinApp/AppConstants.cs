@@ -18,6 +18,7 @@ namespace AutoReportWinApp
             public static readonly string AppendOutputFileDialogBoxTitle = "確認";
             public static readonly string OutputFilePathEnd = @"\daily_report_data.csv";
             public static readonly string AscResName = ".Resource";
+            public static readonly string WinEncoding = "Shift_JIS";
         }
     }
     namespace RegExp
