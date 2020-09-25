@@ -20,7 +20,7 @@ namespace AutoReportWinApp
         public string schContent { get; set; }
         [Index(4)]
         public string task { get; set; }
-        public string getLineAtConma() 
+        public string getLineAtConma()
         {
             string[] properties = { controlNum, date, impContent, schContent, task };
             string rtnLine = string.Join(SpecialStr.AppConstants.CommaStr, properties);
