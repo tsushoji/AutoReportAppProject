@@ -8,19 +8,19 @@ using System.Windows.Forms;
 namespace AutoReportWinApp
 {
     public class Message
-	{
-		IDictionary<string, string> dicMsg = new Dictionary<string, string>();
+    {
+        IDictionary<string, string> dicMsg = new Dictionary<string, string>();
         private readonly string notReadDataMsg = "メッセージ設定ファイルを対象パスに配置してください。";
         private readonly string notReadDataMsgID = "メッセージ設定ファイルにメッセージIDがありません。";
         private readonly string notReadDataMsgArgs = "メッセージIDの引数が設定されていません。";
         private readonly string SettingMsgPathEnd = @"\setting\Message.csv";
         private readonly string ReplaceArgsFirst = "{0}";
         public Message()
-		{
-            string SettingMsgPath = this.getSettingMsgPathPath();
+        {
+            string SettingMsgPath = this.getSettingMsgPath();
             this.initSettingMsgReader(SettingMsgPath);
         }
-        private string getSettingMsgPathPath()
+        private string getSettingMsgPath()
         {
             Assembly myAssembly = Assembly.GetEntryAssembly();
             string exeFilePath = myAssembly.Location;
@@ -51,7 +51,7 @@ namespace AutoReportWinApp
             }
         }
         public string get(string messageId)
-		{
+        {
             string rtnMsg = notReadDataMsgID;
             if (this.dicMsg.TryGetValue(messageId, out string getValue))
             {
@@ -60,8 +60,8 @@ namespace AutoReportWinApp
             return rtnMsg;
         }
 
-		public string get(string messageId, string argFirst)
-		{
+        public string get(string messageId, string argFirst)
+        {
             string rtnMsg = notReadDataMsgID;
             string getValue;
             if (this.dicMsg.TryGetValue(messageId, out getValue))
@@ -72,7 +72,7 @@ namespace AutoReportWinApp
                     rtnMsg = getValue.Replace(this.ReplaceArgsFirst, argFirst);
                 }
             }
-			return rtnMsg;
-		}
-	}
+            return rtnMsg;
+        }
+    }
 }

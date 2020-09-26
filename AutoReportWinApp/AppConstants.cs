@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AutoReportWinApp
 {
-    namespace SetValue 
+    namespace SetValue
     {
         class AppConstants
         {
