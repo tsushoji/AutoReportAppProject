@@ -1,17 +1,11 @@
 ﻿using CsvHelper;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AutoReportWinApp
@@ -97,7 +91,7 @@ namespace AutoReportWinApp
                     CreateDataColNum++;
                 }
             }
-            MessageBox.Show(DailyReportDataListForm.Msg.get("I0001"));
+            MessageBox.Show(Properties.Resources.I0001);
             this.Close();
         }
         private void createDataUpdate()
@@ -117,8 +111,8 @@ namespace AutoReportWinApp
                         if (controlNum == CreateDataColNum)
                         {
                             string[] writingData = { CreateDataColNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
-                            
-                            for (var i = 0; i < writingData.Length; i++) 
+
+                            for (var i = 0; i < writingData.Length; i++)
                             {
                                 DailyReportDataListForm.DataGridView1.Rows[keyValuePair.Key].Cells[i].Value = writingData[i];
                             }
@@ -134,7 +128,7 @@ namespace AutoReportWinApp
                     }
                 }
 
-                MessageBox.Show(DailyReportDataListForm.Msg.get("I0002"));
+                MessageBox.Show(Properties.Resources.I0002);
                 this.Close();
             }
         }
@@ -173,7 +167,7 @@ namespace AutoReportWinApp
             if (errorMsgEleList.Count > 0)
             {
                 string errorPartialMsg = errorMsgEleList.Aggregate((i, j) => i + SpecialStr.AppConstants.ReadingPointStr + j);
-                errorMsg.Append(DailyReportDataListForm.Msg.get("E0003", errorPartialMsg));
+                errorMsg.Append(Properties.Resources.E0003.Replace("{ARGFIRST}", errorPartialMsg));
             }
 
             if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate))
@@ -182,7 +176,7 @@ namespace AutoReportWinApp
                 {
                     errorMsg.Append(SpecialStr.AppConstants.NewLineStr);
                 }
-                errorMsg.Append(DailyReportDataListForm.Msg.get("E0002"));
+                errorMsg.Append(Properties.Resources.E0002);
             }
 
             if (!DuplicateCheck(inputDate, this.DailyReportDataListForm._csvDailyReportDataMap))
@@ -191,7 +185,7 @@ namespace AutoReportWinApp
                 {
                     errorMsg.Append(SpecialStr.AppConstants.NewLineStr);
                 }
-                errorMsg.Append(DailyReportDataListForm.Msg.get("E0004"));
+                errorMsg.Append(Properties.Resources.E0004);
             }
 
             if (errorMsg.Length > 0)
@@ -235,7 +229,7 @@ namespace AutoReportWinApp
             {
                 foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in dailyReportData)
                 {
-                    if (Int32.Parse(keyValuePair.Value.controlNum) == CreateDataColNum) 
+                    if (Int32.Parse(keyValuePair.Value.controlNum) == CreateDataColNum)
                     {
                         continue;
                     }
