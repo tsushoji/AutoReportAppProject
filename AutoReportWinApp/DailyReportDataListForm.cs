@@ -1,15 +1,12 @@
 ﻿using CsvHelper;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AutoReportWinApp
@@ -19,21 +16,18 @@ namespace AutoReportWinApp
         private DataGridView _dataGridView1;
         internal Dictionary<int, DailyReportEntity> _csvDailyReportDataMap;
         private string _csvDailyReportDataPath;
-        private Message _msg;
         public DailyReportDataListForm()
         {
             InitializeComponent();
             DataGridView1 = this.dataGridView1;
             this._csvDailyReportDataMap = new Dictionary<int, DailyReportEntity>();
-            Msg = new Message();
             CsvDailyReportDataPath = this.csvDailyReportDataPathGet();
             this.initDailyReportDataReader(CsvDailyReportDataPath);
         }
 
         public DataGridView DataGridView1 { get => _dataGridView1; set => _dataGridView1 = value; }
         public string CsvDailyReportDataPath { get => _csvDailyReportDataPath; set => _csvDailyReportDataPath = value; }
-        public Message Msg { get => _msg; set => _msg = value; }
-        private string csvDailyReportDataPathGet() 
+        private string csvDailyReportDataPathGet()
         {
             Assembly myAssembly = Assembly.GetEntryAssembly();
             string exeFilePath = myAssembly.Location;
@@ -52,7 +46,7 @@ namespace AutoReportWinApp
                     var rowNumIndex = 0;
                     csv.Configuration.HasHeaderRecord = false; // ヘッダーの有無
                     var dailyReports = csv.GetRecords<DailyReportEntity>(); // データ読み出し（IEnumerable<Item>として受け取る）
-                    foreach (DailyReportEntity dailyReport in dailyReports) 
+                    foreach (DailyReportEntity dailyReport in dailyReports)
                     {
                         DataGridView1.Rows.Add(dailyReport.controlNum, dailyReport.date, DailyReportEntity.replaceToStrWithNewLine(dailyReport.impContent), DailyReportEntity.replaceToStrWithNewLine(dailyReport.schContent), DailyReportEntity.replaceToStrWithNewLine(dailyReport.task));
                         this._csvDailyReportDataMap.Add(rowNumIndex, dailyReport);
@@ -83,12 +77,12 @@ namespace AutoReportWinApp
                     {
                         inputDailyReportForm.CreateDataColNum = this.maxColNumGet(this._csvDailyReportDataMap) + 1;
                     }
-                    else 
+                    else
                     {
                         inputDailyReportForm.CreateDataColNum = SetValue.AppConstants.CreateReportDataColNumFirst;
                     }
-                    
-                    if (e.RowIndex != this.DataGridView1.Rows.Count - 1) 
+
+                    if (e.RowIndex != this.DataGridView1.Rows.Count - 1)
                     {
                         inputDailyReportForm.CreateDataMode = CreateDataMode.UPDATE;
                         inputDailyReportForm.CreateDataColNum = Int32.Parse(this.DataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString());
@@ -97,7 +91,7 @@ namespace AutoReportWinApp
                         inputDailyReportForm.TextBox3Text = this.DataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString();
                         inputDailyReportForm.TextBox4Text = this.DataGridView1.Rows[e.RowIndex].Cells[4].Value.ToString();
                     }
-                    
+
                     inputDailyReportForm.ShowDialog();
                 }
             }
@@ -133,7 +127,7 @@ namespace AutoReportWinApp
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
                 dialog.SelectedPath = SetValue.AppConstants.FolderDialogBoxInitSelected;
-                dialog.Description = Msg.get("I0006");
+                dialog.Description = Properties.Resources.I0006;
                 dialog.ShowNewFolderButton = true;
 
                 DialogResult result = dialog.ShowDialog();
@@ -147,9 +141,9 @@ namespace AutoReportWinApp
 
         private void buttonDailyReportDataOutput_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(this.textBox1.Text)) 
+            if (string.IsNullOrEmpty(this.textBox1.Text))
             {
-                MessageBox.Show(Msg.get("E0001"));
+                MessageBox.Show(Properties.Resources.E0001);
                 return;
             }
 
@@ -157,19 +151,19 @@ namespace AutoReportWinApp
             {
                 Boolean appendFlg = false;
                 string outputPath = this.textBox1.Text + SetValue.AppConstants.OutputFilePathEnd;
-                string outputDailyReportDataCompMsg = Msg.get("I0003");
+                string outputDailyReportDataCompMsg = Properties.Resources.I0003;
                 if (File.Exists(outputPath))
                 {
-                    DialogResult dialogResult = MessageBox.Show(Msg.get("W0001"), SetValue.AppConstants.AppendOutputFileDialogBoxTitle, MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show(Properties.Resources.W0001, SetValue.AppConstants.AppendOutputFileDialogBoxTitle, MessageBoxButtons.YesNo);
                     if (dialogResult == System.Windows.Forms.DialogResult.No)
                     {
-                        MessageBox.Show(Msg.get("I0005"));
+                        MessageBox.Show(Properties.Resources.I0005);
                         this.textBox1.ResetText();
                         return;
                     }
                     else if (dialogResult == System.Windows.Forms.DialogResult.Yes)
                     {
-                        outputDailyReportDataCompMsg = Msg.get("I0004");
+                        outputDailyReportDataCompMsg = Properties.Resources.I0004;
                         appendFlg = true;
                     }
                     else
@@ -183,9 +177,9 @@ namespace AutoReportWinApp
                 MessageBox.Show(outputDailyReportDataCompMsg);
                 this.textBox1.ResetText();
             }
-            else 
+            else
             {
-                MessageBox.Show(Msg.get("E0005"));
+                MessageBox.Show(Properties.Resources.E0005);
             }
         }
 
