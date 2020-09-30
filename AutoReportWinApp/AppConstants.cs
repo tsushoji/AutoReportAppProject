@@ -8,6 +8,10 @@ namespace AutoReportWinApp
 {
     namespace SetValue
     {
+        /// <summary>
+        /// 定数ユーティリティークラス
+        /// </summary>
+        /// <remarks>アプリケーション用</remarks>
         class AppConstants
         {
             public static readonly int CreateReportDataColNumFirst = 1;
@@ -23,6 +27,10 @@ namespace AutoReportWinApp
     }
     namespace RegExp
     {
+        /// <summary>
+        /// 定数ユーティリティークラス
+        /// </summary>
+        /// <remarks>正規表現用</remarks>
         class AppConstants
         {
             public static readonly string DateRegExp = @"^\d{4}/\d{2}/\d{2}$";
@@ -30,6 +38,10 @@ namespace AutoReportWinApp
     }
     namespace SpecialStr
     {
+        /// <summary>
+        /// 定数ユーティリティークラス
+        /// </summary>
+        /// <remarks>特殊文字用</remarks>
         class AppConstants
         {
             public static readonly char CommaChar = ',';

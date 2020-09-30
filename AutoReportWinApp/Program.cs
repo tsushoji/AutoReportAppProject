@@ -9,7 +9,7 @@ namespace AutoReportWinApp
     static class Program
     {
         /// <summary>
-        /// アプリケーションのメイン エントリ ポイントです。
+        /// アプリケーションのメインエントリポイントクラス
         /// </summary>
         [STAThread]
         static void Main()

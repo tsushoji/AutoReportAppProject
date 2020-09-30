@@ -10,20 +10,26 @@ using System.Windows.Forms;
 
 namespace AutoReportWinApp
 {
+    /// <summary>
+    /// データ作成モード
+    /// </summary>
+    /// <remarks>APPEND：追加、UPDATE：更新</remarks>
     public enum CreateDataMode
     {
         APPEND,
         UPDATE
     }
+
+    /// <summary>
+    /// 入力日報フォームクラス
+    /// </summary>
+    /// <remarks>日報を入力し作成するためのフォーム</remarks>
     public partial class InputDailyReportForm : Form
     {
         private DailyReportDataListForm _dailyReportDataListForm;
         private CreateDataMode _createDataMode;
         private int _createDataColNum;
-        public InputDailyReportForm()
-        {
-            InitializeComponent();
-        }
+
         public DailyReportDataListForm DailyReportDataListForm { get => _dailyReportDataListForm; set => _dailyReportDataListForm = value; }
         public CreateDataMode CreateDataMode { get => _createDataMode; set => _createDataMode = value; }
         public int CreateDataColNum { get => _createDataColNum; set => _createDataColNum = value; }
@@ -36,6 +42,20 @@ namespace AutoReportWinApp
         public string Label3Text { get => this.label3.Text; }
         public string Label4Text { get => this.label4.Text; }
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <remarks>入力日報フォームクラス</remarks>
+        public InputDailyReportForm()
+        {
+            InitializeComponent();
+        }
+
+        /// <summary>
+        /// 「カレンダー」ボタン押下時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">イベントに関わる引数</param>
         private void buttonCalendar_Click(object sender, EventArgs e)
         {
             using (var calendarForm = new CalendarForm(this))
@@ -44,6 +64,11 @@ namespace AutoReportWinApp
             }
         }
 
+        /// <summary>
+        /// 「データ作成」ボタン押下時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">イベントに関わる引数</param>
         private void buttonCreateData_Click(object sender, EventArgs e)
         {
             if (this.inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
@@ -61,11 +86,20 @@ namespace AutoReportWinApp
             }
         }
 
+        /// <summary>
+        /// 「データリストへ」ボタン押下時、イベント
+        /// </summary>
+        /// <remarks>「日報データリストフォーム」へ遷移</remarks>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">イベントに関わる引数</param>
         private void buttonForDataList_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
+        /// <summary>
+        /// 日報データ新規作成
+        /// </summary>
         private void createDataAppend()
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
@@ -94,6 +128,10 @@ namespace AutoReportWinApp
             MessageBox.Show(Properties.Resources.I0001);
             this.Close();
         }
+
+        /// <summary>
+        /// 日報データ更新
+        /// </summary>
         private void createDataUpdate()
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
@@ -133,6 +171,15 @@ namespace AutoReportWinApp
             }
         }
 
+        /// <summary>
+        /// 日報データ作成時、入力チェック
+        /// </summary>
+        /// <remarks>メッセージボックスにエラーメッセージ出力</remarks>
+        /// <param name="inputDate">「日付」項目入力値</param>
+        /// <param name="inputImpContent">「実施内容」項目入力値</param>
+        /// <param name="inputScheContent">「翌日予定」項目入力値</param>
+        /// <param name="inputTask">「課題」項目入力値</param>
+        /// <returns>判定結果</returns>
         private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask)
         {
             var NotInputDateMsgEle = Label1Text.Substring(0, 2);
@@ -197,6 +244,12 @@ namespace AutoReportWinApp
             return rtnFlag;
         }
 
+        /// <summary>
+        /// 文字列が日付であるかチェック
+        /// </summary>
+        /// <remarks>日付年月日の数値をチェック</remarks>
+        /// <param name="dateStr">日付文字列</param>
+        /// <returns>判定結果</returns>
         private Boolean isDate(string dateStr)
         {
             var pattern = SpecialStr.AppConstants.SlashChar;
@@ -221,6 +274,14 @@ namespace AutoReportWinApp
 
             return true;
         }
+
+        /// <summary>
+        /// 日報作成データ重複チェック
+        /// </summary>
+        /// <remarks>「日付」で日報作成データ重複をチェック</remarks>
+        /// <param name="dateStr">日付文字列</param>
+        /// <param name="dailyReportData">作成済み日報データ</param>
+        /// <returns>dataの平均値(出力)</returns>
         private Boolean DuplicateCheck(string dateStr, Dictionary<int, DailyReportEntity> dailyReportData)
         {
             Boolean rtnFlag = true;
@@ -242,6 +303,13 @@ namespace AutoReportWinApp
             }
             return rtnFlag;
         }
+
+        /// <summary>
+        /// 入力日報フォームを閉じたときのイベント
+        /// </summary>
+        /// <remarks>日報データリストフォーム遷移後のデータグリッドビューフォーカスをクリア</remarks>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">イベントに関わる引数</param>
         private void InputDailyReportForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             DailyReportDataListForm.DataGridView1.CurrentCell = null;

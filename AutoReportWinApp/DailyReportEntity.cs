@@ -2,6 +2,10 @@
 
 namespace AutoReportWinApp
 {
+    /// <summary>
+    /// 日報データエンティティクラス
+    /// </summary>
+    /// <remarks>日報データ用クラス</remarks>
     class DailyReportEntity
     {
         [Index(0)]
@@ -14,12 +18,12 @@ namespace AutoReportWinApp
         public string schContent { get; set; }
         [Index(4)]
         public string task { get; set; }
-        public string getLineAtConma()
-        {
-            string[] properties = { controlNum, date, impContent, schContent, task };
-            string rtnLine = string.Join(SpecialStr.AppConstants.CommaStr, properties);
-            return rtnLine;
-        }
+
+        /// <summary>
+        /// 「@NewLine」を改行に置換
+        /// </summary>
+        /// <param name="strWithUserNewLine">置換前文字列</param>
+        /// <returns>置換後文字列</returns>
         public static string replaceToStrWithNewLine(string strWithUserNewLine)
         {
             string rtnStr = strWithUserNewLine;
@@ -29,6 +33,12 @@ namespace AutoReportWinApp
             }
             return rtnStr;
         }
+
+        /// <summary>
+        /// 改行を「@NewLine」に置換
+        /// </summary>
+        /// <param name="strWithNewLine">置換前文字列</param>
+        /// <returns>置換後文字列</returns>
         public static string replaceToStrWithUserNewLine(string strWithNewLine)
         {
             string rtnStr = strWithNewLine;

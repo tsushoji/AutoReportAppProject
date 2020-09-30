@@ -11,11 +11,23 @@ using System.Windows.Forms;
 
 namespace AutoReportWinApp
 {
+    /// <summary>
+    /// 日報データリストフォームクラス
+    /// </summary>
+    /// <remarks>作成した日報データを表示するフォーム</remarks>
     public partial class DailyReportDataListForm : Form
     {
         private DataGridView _dataGridView1;
         internal Dictionary<int, DailyReportEntity> _csvDailyReportDataMap;
         private string _csvDailyReportDataPath;
+
+        public DataGridView DataGridView1 { get => _dataGridView1; set => _dataGridView1 = value; }
+        public string CsvDailyReportDataPath { get => _csvDailyReportDataPath; set => _csvDailyReportDataPath = value; }
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <remarks>日報データリストフォームクラス</remarks>
         public DailyReportDataListForm()
         {
             InitializeComponent();
@@ -25,8 +37,10 @@ namespace AutoReportWinApp
             this.initDailyReportDataReader(CsvDailyReportDataPath);
         }
 
-        public DataGridView DataGridView1 { get => _dataGridView1; set => _dataGridView1 = value; }
-        public string CsvDailyReportDataPath { get => _csvDailyReportDataPath; set => _csvDailyReportDataPath = value; }
+        /// <summary>
+        /// 日報データcsvファイルパスを取得
+        /// </summary>
+        /// <returns>日報データcsvファイルパス</returns>
         private string csvDailyReportDataPathGet()
         {
             Assembly myAssembly = Assembly.GetEntryAssembly();
@@ -35,6 +49,12 @@ namespace AutoReportWinApp
             string path = directoryName + SetValue.AppConstants.CsvDailyReportDataPathEnd;
             return path;
         }
+
+        /// <summary>
+        /// 日報データリストフォームクラスの初期処理
+        /// </summary>
+        /// <remarks>日報データcsvファイルを作成または読み込み、日報データリストフォームに表示</remarks>
+        /// <param name="createDataFilePath">日報データcsvファイルパス</param>
         private void initDailyReportDataReader(string createDataFilePath)
         {
             if (File.Exists(createDataFilePath))
@@ -65,6 +85,12 @@ namespace AutoReportWinApp
             }
         }
 
+        /// <summary>
+        /// データグリッドビューダブルクリック時、イベント
+        /// </summary>
+        /// <remarks>更新した日報データをダブルクリック時、イベント</remarks>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
         private void upDailyReport_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0)
@@ -96,6 +122,13 @@ namespace AutoReportWinApp
                 }
             }
         }
+
+        /// <summary>
+        /// 日報データリストの最大管理番号取得
+        /// </summary>
+        /// <remarks>日報データ新規作成時、必要</remarks>
+        /// <param name="dataReportMap">日報データ辞書</param>
+        /// <returns>最大管理番号</returns>
         private int maxColNumGet(Dictionary<int, DailyReportEntity> dataReportMap)
         {
             var colNumList = new List<int>();
@@ -108,12 +141,25 @@ namespace AutoReportWinApp
             return colNumList.Max();
         }
 
+        /// <summary>
+        /// 日報データリストクラス読み込み時、イベント
+        /// </summary>
+        /// <remarks>クラス読み込み時、データグリッドビューフォーカスをクリア</remarks>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">イベントに関わる引数</param>
         private void DailyReportDataListForm_Load(object sender, EventArgs e)
         {
             this.Activate();
             this.dataGridView1.CurrentCell = null;
             this.dataGridView1.RowHeadersVisible = false;
         }
+
+        /// <summary>
+        /// データグリッドビューのスタイルを変更
+        /// </summary>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
+        /// <param name="color">ARGB色</param>
+        /// <param name="cursor">マウスポインターに使用されるイメージ</param>
         private void ChangeDataGridViewStyle(DataGridViewCellEventArgs e, Color color, Cursor cursor)
         {
             DataGridView1.Cursor = cursor;
@@ -122,6 +168,13 @@ namespace AutoReportWinApp
             dataGridViewRowStyle.BackColor = color;
             dataGridViewRowStyle.SelectionBackColor = color;
         }
+
+        /// <summary>
+        /// 「フォルダダイアログ」ボタンクリック時、イベント
+        /// </summary>
+        /// <remarks>出力フォルダパスに出力するダイアログボックス</remarks>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">イベントに関わる引数</param>
         private void buttonFolderDialog_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
@@ -139,6 +192,11 @@ namespace AutoReportWinApp
             }
         }
 
+        /// <summary>
+        /// 「出力」ボタン押下時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">イベントに関わる引数</param>
         private void buttonDailyReportDataOutput_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(this.textBox1.Text))
@@ -183,6 +241,12 @@ namespace AutoReportWinApp
             }
         }
 
+        /// <summary>
+        /// データグリッドビューマウスポインターがセルに入ったときのイベント
+        /// </summary>
+        /// <remarks>データグリッドビューの「日付」、「実施内容」、「翌日予定」、「課題」項目データのセルにマウスポインターが入ったとき、データグリッドビューのスタイルを変更</remarks>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
         private void upDailyReport_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0)
@@ -191,6 +255,12 @@ namespace AutoReportWinApp
             }
         }
 
+        /// <summary>
+        /// データグリッドビューマウスポインターがセルから離れるときのイベント
+        /// </summary>
+        /// <remarks>データグリッドビューの「日付」、「実施内容」、「翌日予定」、「課題」項目データのセルにマウスポインターが入ったとき、データグリッドビューのスタイルを変更</remarks>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
         private void upDailyReport_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0)
