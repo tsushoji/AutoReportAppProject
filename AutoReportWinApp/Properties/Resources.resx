@@ -124,7 +124,7 @@
     <value>正しい形式で日付を入力してください。</value>
   </data>
   <data name="E0003" xml:space="preserve">
-    <value>{ARGFIRST}が入力されていません。</value>
+    <value>{FIRSTARG}が入力されていません。</value>
   </data>
   <data name="E0004" xml:space="preserve">
     <value>日報データが重複しています。</value>

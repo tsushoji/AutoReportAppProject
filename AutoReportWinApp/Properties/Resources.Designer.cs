@@ -79,7 +79,7 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
-        ///   {ARGFIRST}が入力されていません。 に類似しているローカライズされた文字列を検索します。
+        ///   {FIRSTARG}が入力されていません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string E0003 {
             get {

@@ -135,7 +135,7 @@
             this.buttonCalendar.TabIndex = 8;
             this.buttonCalendar.Text = "カレンダー";
             this.buttonCalendar.UseVisualStyleBackColor = true;
-            this.buttonCalendar.Click += new System.EventHandler(this.buttonCalendar_Click);
+            this.buttonCalendar.Click += new System.EventHandler(this.ButtonCalendar_Click);
             // 
             // buttonCreate
             // 
@@ -148,7 +148,7 @@
             this.buttonCreate.TabIndex = 9;
             this.buttonCreate.Text = "データ作成";
             this.buttonCreate.UseVisualStyleBackColor = true;
-            this.buttonCreate.Click += new System.EventHandler(this.buttonCreateData_Click);
+            this.buttonCreate.Click += new System.EventHandler(this.ButtonCreateData_Click);
             // 
             // buttonForDataList
             // 
@@ -161,7 +161,7 @@
             this.buttonForDataList.TabIndex = 10;
             this.buttonForDataList.Text = "データリストへ";
             this.buttonForDataList.UseVisualStyleBackColor = true;
-            this.buttonForDataList.Click += new System.EventHandler(this.buttonForDataList_Click);
+            this.buttonForDataList.Click += new System.EventHandler(this.ButtonToDailyReportDataListForm_Click);
             // 
             // label5
             // 

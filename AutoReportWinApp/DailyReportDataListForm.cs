@@ -11,18 +11,26 @@ using System.Windows.Forms;
 
 namespace AutoReportWinApp
 {
+
     /// <summary>
     /// 日報データリストフォームクラス
     /// </summary>
     /// <remarks>作成した日報データを表示するフォーム</remarks>
     public partial class DailyReportDataListForm : Form
     {
-        private DataGridView _dataGridView1;
-        internal Dictionary<int, DailyReportEntity> _csvDailyReportDataMap;
-        private string _csvDailyReportDataPath;
+        internal Dictionary<int, DailyReportEntity> CsvDailyReportDataMap;
+        private string csvDailyReportDataPath;
 
-        public DataGridView DataGridView1 { get => _dataGridView1; set => _dataGridView1 = value; }
-        public string CsvDailyReportDataPath { get => _csvDailyReportDataPath; set => _csvDailyReportDataPath = value; }
+        private static readonly int createReportDataFirstColNum = 1;
+        private static readonly string csvDailyReportParentFolderName = @"\data";
+        private static readonly string initDialogBoxFolderPath = @"c:\";
+        private static readonly string dialogBoxCaption = "日報出力フォルダダイアログボックス";
+        private static readonly string csvDailyReportFileNameWithExt = @"\daily_report_data.csv";
+        private static readonly string winCharCode = "Shift_JIS";
+
+        public string CsvDailyReportDataPath { get => csvDailyReportDataPath; set => csvDailyReportDataPath = value; }
+        public DataGridView DataGridView1 { get => this.dataGridView1; set => this.dataGridView1 = value; }
+        public static string WinCharCode { get => winCharCode; }
 
         /// <summary>
         /// コンストラクタ
@@ -31,23 +39,22 @@ namespace AutoReportWinApp
         public DailyReportDataListForm()
         {
             InitializeComponent();
-            DataGridView1 = this.dataGridView1;
-            this._csvDailyReportDataMap = new Dictionary<int, DailyReportEntity>();
-            CsvDailyReportDataPath = this.csvDailyReportDataPathGet();
-            this.initDailyReportDataReader(CsvDailyReportDataPath);
+            this.CsvDailyReportDataMap = new Dictionary<int, DailyReportEntity>();
+            CsvDailyReportDataPath = this.GetCsvDailyReportDataPath();
+            this.InitDailyReportDataReader(CsvDailyReportDataPath);
         }
 
         /// <summary>
         /// 日報データcsvファイルパスを取得
         /// </summary>
         /// <returns>日報データcsvファイルパス</returns>
-        private string csvDailyReportDataPathGet()
+        private string GetCsvDailyReportDataPath()
         {
             Assembly myAssembly = Assembly.GetEntryAssembly();
             string exeFilePath = myAssembly.Location;
-            string directoryName = System.IO.Path.GetDirectoryName(exeFilePath);
-            string path = directoryName + SetValue.AppConstants.CsvDailyReportDataPathEnd;
-            return path;
+            string dirPath = System.IO.Path.GetDirectoryName(exeFilePath);
+            string csvDailyReportDataPath = dirPath + csvDailyReportParentFolderName + csvDailyReportFileNameWithExt;
+            return csvDailyReportDataPath;
         }
 
         /// <summary>
@@ -55,33 +62,37 @@ namespace AutoReportWinApp
         /// </summary>
         /// <remarks>日報データcsvファイルを作成または読み込み、日報データリストフォームに表示</remarks>
         /// <param name="createDataFilePath">日報データcsvファイルパス</param>
-        private void initDailyReportDataReader(string createDataFilePath)
+        private void InitDailyReportDataReader(string csvDailyReportDataPath)
         {
-            if (File.Exists(createDataFilePath))
+            //日報データが既にある場合
+            if (File.Exists(csvDailyReportDataPath))
             {
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                using (var reader = new StreamReader(createDataFilePath, Encoding.GetEncoding(SetValue.AppConstants.WinEncoding)))
+                using (var reader = new StreamReader(csvDailyReportDataPath, Encoding.GetEncoding(WinCharCode)))
                 using (var csv = new CsvReader(reader, CultureInfo.CurrentCulture))
                 {
-                    var rowNumIndex = 0;
-                    csv.Configuration.HasHeaderRecord = false; // ヘッダーの有無
-                    var dailyReports = csv.GetRecords<DailyReportEntity>(); // データ読み出し（IEnumerable<Item>として受け取る）
+                    int rowIndex = 0;
+                    // ヘッダーの有無
+                    csv.Configuration.HasHeaderRecord = false;
+                    // データ読み出し（IEnumerable<Item>として受け取る）
+                    var dailyReports = csv.GetRecords<DailyReportEntity>();
                     foreach (DailyReportEntity dailyReport in dailyReports)
                     {
-                        DataGridView1.Rows.Add(dailyReport.controlNum, dailyReport.date, DailyReportEntity.replaceToStrWithNewLine(dailyReport.impContent), DailyReportEntity.replaceToStrWithNewLine(dailyReport.schContent), DailyReportEntity.replaceToStrWithNewLine(dailyReport.task));
-                        this._csvDailyReportDataMap.Add(rowNumIndex, dailyReport);
-                        rowNumIndex++;
+                        DataGridView1.Rows.Add(dailyReport.ControlNum, dailyReport.DateStr, DailyReportEntity.ReplaceToNewLineStr(dailyReport.ImplementationContent), DailyReportEntity.ReplaceToNewLineStr(dailyReport.TomorrowPlan), DailyReportEntity.ReplaceToNewLineStr(dailyReport.Task));
+                        this.CsvDailyReportDataMap.Add(rowIndex, dailyReport);
+                        rowIndex++;
                     }
                 }
             }
+            //日報データがない場合
             else
             {
-                string createDataDirectoryPath = System.IO.Path.GetDirectoryName(createDataFilePath);
+                string createDataDirectoryPath = System.IO.Path.GetDirectoryName(csvDailyReportDataPath);
                 if (!System.IO.Directory.Exists(createDataDirectoryPath))
                 {
                     Directory.CreateDirectory(createDataDirectoryPath);
                 }
-                File.Create(createDataFilePath).Close();
+                File.Create(csvDailyReportDataPath).Close();
             }
         }
 
@@ -91,7 +102,7 @@ namespace AutoReportWinApp
         /// <remarks>更新した日報データをダブルクリック時、イベント</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
-        private void upDailyReport_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void ClickCreateData_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0)
             {
@@ -99,23 +110,28 @@ namespace AutoReportWinApp
                 {
                     inputDailyReportForm.DailyReportDataListForm = this;
                     inputDailyReportForm.CreateDataMode = CreateDataMode.APPEND;
-                    if (this._csvDailyReportDataMap.Count > 0)
+                    //日報データが1件以上ある場合
+                    if (this.CsvDailyReportDataMap.Count > 0)
                     {
-                        inputDailyReportForm.CreateDataColNum = this.maxColNumGet(this._csvDailyReportDataMap) + 1;
+                        //日報データ作成管理番号をプロパティにセット
+                        inputDailyReportForm.CreateDataControlNum = this.GetMaxControlNum(this.CsvDailyReportDataMap) + 1;
                     }
+                    //日報データがない場合
                     else
                     {
-                        inputDailyReportForm.CreateDataColNum = SetValue.AppConstants.CreateReportDataColNumFirst;
+                        //日報データ作成管理番号をプロパティにセット
+                        inputDailyReportForm.CreateDataControlNum = createReportDataFirstColNum;
                     }
 
-                    if (e.RowIndex != this.DataGridView1.Rows.Count - 1)
+                    //日報データを更新する場合
+                    if (e.RowIndex != DataGridView1.Rows.Count - 1)
                     {
                         inputDailyReportForm.CreateDataMode = CreateDataMode.UPDATE;
-                        inputDailyReportForm.CreateDataColNum = Int32.Parse(this.DataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString());
-                        inputDailyReportForm.TextBox1Text = this.DataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
-                        inputDailyReportForm.TextBox2Text = this.DataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
-                        inputDailyReportForm.TextBox3Text = this.DataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString();
-                        inputDailyReportForm.TextBox4Text = this.DataGridView1.Rows[e.RowIndex].Cells[4].Value.ToString();
+                        inputDailyReportForm.CreateDataControlNum = Int32.Parse(DataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString());
+                        inputDailyReportForm.TextBox1Text = DataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
+                        inputDailyReportForm.TextBox2Text = DataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
+                        inputDailyReportForm.TextBox3Text = DataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString();
+                        inputDailyReportForm.TextBox4Text = DataGridView1.Rows[e.RowIndex].Cells[4].Value.ToString();
                     }
 
                     inputDailyReportForm.ShowDialog();
@@ -129,16 +145,16 @@ namespace AutoReportWinApp
         /// <remarks>日報データ新規作成時、必要</remarks>
         /// <param name="dataReportMap">日報データ辞書</param>
         /// <returns>最大管理番号</returns>
-        private int maxColNumGet(Dictionary<int, DailyReportEntity> dataReportMap)
+        private int GetMaxControlNum(Dictionary<int, DailyReportEntity> dataReportMap)
         {
-            var colNumList = new List<int>();
+            var controlNumList = new List<int>();
             int controlNum = 0;
             foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in dataReportMap)
             {
-                controlNum = Int32.Parse(keyValuePair.Value.controlNum);
-                colNumList.Add(controlNum);
+                controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
+                controlNumList.Add(controlNum);
             }
-            return colNumList.Max();
+            return controlNumList.Max();
         }
 
         /// <summary>
@@ -149,6 +165,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void DailyReportDataListForm_Load(object sender, EventArgs e)
         {
+            //データグリッドビューフォーカスをクリア
             this.Activate();
             this.dataGridView1.CurrentCell = null;
             this.dataGridView1.RowHeadersVisible = false;
@@ -175,11 +192,11 @@ namespace AutoReportWinApp
         /// <remarks>出力フォルダパスに出力するダイアログボックス</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
-        private void buttonFolderDialog_Click(object sender, EventArgs e)
+        private void ButtonFolderDialog_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
-                dialog.SelectedPath = SetValue.AppConstants.FolderDialogBoxInitSelected;
+                dialog.SelectedPath = initDialogBoxFolderPath;
                 dialog.Description = Properties.Resources.I0006;
                 dialog.ShowNewFolderButton = true;
 
@@ -197,7 +214,7 @@ namespace AutoReportWinApp
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
-        private void buttonDailyReportDataOutput_Click(object sender, EventArgs e)
+        private void ButtonOutputDailyReportData_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(this.textBox1.Text))
             {
@@ -208,11 +225,11 @@ namespace AutoReportWinApp
             if (System.IO.Directory.Exists(this.textBox1.Text))
             {
                 Boolean appendFlg = false;
-                string outputPath = this.textBox1.Text + SetValue.AppConstants.OutputFilePathEnd;
+                string outputPath = this.textBox1.Text + csvDailyReportFileNameWithExt;
                 string outputDailyReportDataCompMsg = Properties.Resources.I0003;
                 if (File.Exists(outputPath))
                 {
-                    DialogResult dialogResult = MessageBox.Show(Properties.Resources.W0001, SetValue.AppConstants.AppendOutputFileDialogBoxTitle, MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show(Properties.Resources.W0001, dialogBoxCaption, MessageBoxButtons.YesNo);
                     if (dialogResult == System.Windows.Forms.DialogResult.No)
                     {
                         MessageBox.Show(Properties.Resources.I0005);
@@ -247,7 +264,7 @@ namespace AutoReportWinApp
         /// <remarks>データグリッドビューの「日付」、「実施内容」、「翌日予定」、「課題」項目データのセルにマウスポインターが入ったとき、データグリッドビューのスタイルを変更</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
-        private void upDailyReport_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        private void DailyReportDataListFormDataGridView_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0)
             {
@@ -261,7 +278,7 @@ namespace AutoReportWinApp
         /// <remarks>データグリッドビューの「日付」、「実施内容」、「翌日予定」、「課題」項目データのセルにマウスポインターが入ったとき、データグリッドビューのスタイルを変更</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
-        private void upDailyReport_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
+        private void DailyReportDataListFormDataGridView_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex != 0)
             {

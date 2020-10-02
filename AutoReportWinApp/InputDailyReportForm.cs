@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace AutoReportWinApp
 {
+
     /// <summary>
     /// データ作成モード
     /// </summary>
@@ -26,21 +27,22 @@ namespace AutoReportWinApp
     /// <remarks>日報を入力し作成するためのフォーム</remarks>
     public partial class InputDailyReportForm : Form
     {
-        private DailyReportDataListForm _dailyReportDataListForm;
-        private CreateDataMode _createDataMode;
-        private int _createDataColNum;
+        private DailyReportDataListForm dailyReportDataListForm;
+        private CreateDataMode createDataMode;
+        private int createDataControlNum;
 
-        public DailyReportDataListForm DailyReportDataListForm { get => _dailyReportDataListForm; set => _dailyReportDataListForm = value; }
-        public CreateDataMode CreateDataMode { get => _createDataMode; set => _createDataMode = value; }
-        public int CreateDataColNum { get => _createDataColNum; set => _createDataColNum = value; }
+        private static readonly string RegExpDate = @"^\d{4}/\d{2}/\d{2}$";
+        private static readonly char slashChar = '/';
+        private static readonly string readingPointStr = "、";
+        private static readonly string replaceErrMsgFirstArgStr = "{FIRSTARG}";
+
+        public DailyReportDataListForm DailyReportDataListForm { get => dailyReportDataListForm; set => dailyReportDataListForm = value; }
+        public CreateDataMode CreateDataMode { get => createDataMode; set => createDataMode = value; }
+        public int CreateDataControlNum { get => createDataControlNum; set => createDataControlNum = value; }
         public string TextBox1Text { get => this.textBox1.Text; set => this.textBox1.Text = value; }
         public string TextBox2Text { get => this.textBox2.Text; set => this.textBox2.Text = value; }
         public string TextBox3Text { get => this.textBox3.Text; set => this.textBox3.Text = value; }
         public string TextBox4Text { get => this.textBox4.Text; set => this.textBox4.Text = value; }
-        public string Label1Text { get => this.label1.Text; }
-        public string Label2Text { get => this.label2.Text; }
-        public string Label3Text { get => this.label3.Text; }
-        public string Label4Text { get => this.label4.Text; }
 
         /// <summary>
         /// コンストラクタ
@@ -56,7 +58,7 @@ namespace AutoReportWinApp
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
-        private void buttonCalendar_Click(object sender, EventArgs e)
+        private void ButtonCalendar_Click(object sender, EventArgs e)
         {
             using (var calendarForm = new CalendarForm(this))
             {
@@ -69,18 +71,20 @@ namespace AutoReportWinApp
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
-        private void buttonCreateData_Click(object sender, EventArgs e)
+        private void ButtonCreateData_Click(object sender, EventArgs e)
         {
-            if (this.inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
+            if (this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
             {
                 switch (CreateDataMode)
                 {
+                    //新規追加
                     case CreateDataMode.APPEND:
-                        this.createDataAppend();
+                        this.AppendDailyReportData();
                         break;
 
+                    //更新
                     case CreateDataMode.UPDATE:
-                        this.createDataUpdate();
+                        this.UpdateDailyReportData();
                         break;
                 }
             }
@@ -92,7 +96,7 @@ namespace AutoReportWinApp
         /// <remarks>「日報データリストフォーム」へ遷移</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
-        private void buttonForDataList_Click(object sender, EventArgs e)
+        private void ButtonToDailyReportDataListForm_Click(object sender, EventArgs e)
         {
             this.Close();
         }
@@ -100,29 +104,32 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データ新規作成
         /// </summary>
-        private void createDataAppend()
+        private void AppendDailyReportData()
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
             {
                 File.Delete(DailyReportDataListForm.CsvDailyReportDataPath);
                 using (var writeFileStream = new FileStream(DailyReportDataListForm.CsvDailyReportDataPath, FileMode.Create, FileAccess.Write))
-                using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(SetValue.AppConstants.WinEncoding)))
+                using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
                     var dailyReport = new DailyReportEntity();
-                    DailyReportDataListForm.DataGridView1.Rows.Add(CreateDataColNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text);
-                    dailyReport.controlNum = CreateDataColNum.ToString();
-                    dailyReport.date = TextBox1Text;
-                    dailyReport.impContent = DailyReportEntity.replaceToStrWithUserNewLine(TextBox2Text);
-                    dailyReport.schContent = DailyReportEntity.replaceToStrWithUserNewLine(TextBox3Text);
-                    dailyReport.task = DailyReportEntity.replaceToStrWithUserNewLine(TextBox4Text);
-                    DailyReportDataListForm._csvDailyReportDataMap.Add(DailyReportDataListForm._csvDailyReportDataMap.Count, dailyReport);
-                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePairt in DailyReportDataListForm._csvDailyReportDataMap)
+                    //データグリッドビューに日報データ新規追加
+                    DailyReportDataListForm.DataGridView1.Rows.Add(CreateDataControlNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text);
+                    dailyReport.ControlNum = CreateDataControlNum.ToString();
+                    dailyReport.DateStr = TextBox1Text;
+                    dailyReport.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
+                    dailyReport.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
+                    dailyReport.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
+                    DailyReportDataListForm.CsvDailyReportDataMap.Add(DailyReportDataListForm.CsvDailyReportDataMap.Count, dailyReport);
+                    //日報データファイルに書き込み
+                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.CsvDailyReportDataMap)
                     {
-                        csv.WriteRecord(keyValuePairt.Value);
+                        csv.WriteRecord(keyValuePair.Value);
                         csv.NextRecord();
                     }
-                    CreateDataColNum++;
+                    //日報データ作成後、管理番号を最新に更新
+                    CreateDataControlNum++;
                 }
             }
             MessageBox.Show(Properties.Resources.I0001);
@@ -132,35 +139,37 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データ更新
         /// </summary>
-        private void createDataUpdate()
+        private void UpdateDailyReportData()
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
             {
                 File.Delete(DailyReportDataListForm.CsvDailyReportDataPath);
 
                 using (var writeFileStream = new FileStream(DailyReportDataListForm.CsvDailyReportDataPath, FileMode.Create, FileAccess.Write))
-                using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(SetValue.AppConstants.WinEncoding)))
+                using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
                     int controlNum;
-                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm._csvDailyReportDataMap)
+                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.CsvDailyReportDataMap)
                     {
-                        controlNum = Int32.Parse(keyValuePair.Value.controlNum);
-                        if (controlNum == CreateDataColNum)
+                        controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
+                        //更新する管理番号は日報データリストフォームで「CreateDataControlNum」プロパティーにセット
+                        if (controlNum == CreateDataControlNum)
                         {
-                            string[] writingData = { CreateDataColNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
+                            string[] writingData = { CreateDataControlNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
 
                             for (var i = 0; i < writingData.Length; i++)
                             {
                                 DailyReportDataListForm.DataGridView1.Rows[keyValuePair.Key].Cells[i].Value = writingData[i];
                             }
 
-                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].controlNum = CreateDataColNum.ToString();
-                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].date = DailyReportEntity.replaceToStrWithUserNewLine(TextBox1Text);
-                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].impContent = DailyReportEntity.replaceToStrWithUserNewLine(TextBox2Text);
-                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].schContent = DailyReportEntity.replaceToStrWithUserNewLine(TextBox3Text);
-                            DailyReportDataListForm._csvDailyReportDataMap[keyValuePair.Key].task = DailyReportEntity.replaceToStrWithUserNewLine(TextBox4Text);
+                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].ControlNum = CreateDataControlNum.ToString();
+                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].DateStr = DailyReportEntity.ReplaceToUserNewLineStr(TextBox1Text);
+                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
+                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
+                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                         }
+                        //日報データファイルに書き込み
                         csv.WriteRecord(keyValuePair.Value);
                         csv.NextRecord();
                     }
@@ -175,69 +184,71 @@ namespace AutoReportWinApp
         /// 日報データ作成時、入力チェック
         /// </summary>
         /// <remarks>メッセージボックスにエラーメッセージ出力</remarks>
-        /// <param name="inputDate">「日付」項目入力値</param>
-        /// <param name="inputImpContent">「実施内容」項目入力値</param>
-        /// <param name="inputScheContent">「翌日予定」項目入力値</param>
+        /// <param name="inputDateStr">「日付」項目入力値</param>
+        /// <param name="inputImplementationContent">「実施内容」項目入力値</param>
+        /// <param name="inputTomorrowPlan">「翌日予定」項目入力値</param>
         /// <param name="inputTask">「課題」項目入力値</param>
         /// <returns>判定結果</returns>
-        private Boolean inputcheck(string inputDate, string inputImpContent, string inputScheContent, string inputTask)
+        private Boolean Inputcheck(string inputDateStr, string inputImplementationContent, string inputTomorrowPlan, string inputTask)
         {
-            var NotInputDateMsgEle = Label1Text.Substring(0, 2);
-            var NotInputImpContentMsgEle = Label2Text.Substring(0, 4);
-            var NotInputSchContentMsgEle = Label3Text.Substring(0, 4);
-            var NotInputTaskMsgEle = Label4Text.Substring(0, 2);
-            var pattern = RegExp.AppConstants.DateRegExp;
-            var errorMsgEleList = new List<string>();
-            var errorMsg = new StringBuilder();
+            //日報作成時、入力項目取得
+            var inputDateStrErrMsgEle = this.label1.Text.Substring(0, 2);
+            var inputImplementationContentErrMsgEle = this.label2.Text.Substring(0, 4);
+            var inputTomorrowPlanErrMsgEle = this.label3.Text.Substring(0, 4);
+            var inputTaskErrMsgEle = this.label4.Text.Substring(0, 2);
+
+            var pattern = RegExpDate;
+            var errMsgEleList = new List<string>();
+            var errMsg = new StringBuilder();
             Boolean rtnFlag = true;
 
-            if (string.IsNullOrEmpty(inputDate))
+            if (string.IsNullOrEmpty(inputDateStr))
             {
-                errorMsgEleList.Add(NotInputDateMsgEle);
+                errMsgEleList.Add(inputDateStrErrMsgEle);
             }
 
-            if (string.IsNullOrEmpty(inputImpContent))
+            if (string.IsNullOrEmpty(inputImplementationContent))
             {
-                errorMsgEleList.Add(NotInputImpContentMsgEle);
+                errMsgEleList.Add(inputImplementationContentErrMsgEle);
             }
 
-            if (string.IsNullOrEmpty(inputScheContent))
+            if (string.IsNullOrEmpty(inputTomorrowPlan))
             {
-                errorMsgEleList.Add(NotInputSchContentMsgEle);
+                errMsgEleList.Add(inputTomorrowPlanErrMsgEle);
             }
 
             if (string.IsNullOrEmpty(inputTask))
             {
-                errorMsgEleList.Add(NotInputTaskMsgEle);
+                errMsgEleList.Add(inputTaskErrMsgEle);
             }
 
-            if (errorMsgEleList.Count > 0)
+            if (errMsgEleList.Count > 0)
             {
-                string errorPartialMsg = errorMsgEleList.Aggregate((i, j) => i + SpecialStr.AppConstants.ReadingPointStr + j);
-                errorMsg.Append(Properties.Resources.E0003.Replace("{ARGFIRST}", errorPartialMsg));
+                string partialErrMsg = errMsgEleList.Aggregate((i, j) => i + readingPointStr + j);
+                errMsg.Append(Properties.Resources.E0003.Replace(replaceErrMsgFirstArgStr, partialErrMsg));
             }
 
-            if (!Regex.IsMatch(inputDate, pattern) || !isDate(inputDate))
+            if (!Regex.IsMatch(inputDateStr, pattern) || !IsDate(inputDateStr))
             {
-                if (errorMsg.Length > 0)
+                if (errMsg.Length > 0)
                 {
-                    errorMsg.Append(SpecialStr.AppConstants.NewLineStr);
+                    errMsg.Append(DailyReportEntity.NewLineStr);
                 }
-                errorMsg.Append(Properties.Resources.E0002);
+                errMsg.Append(Properties.Resources.E0002);
             }
 
-            if (!DuplicateCheck(inputDate, this.DailyReportDataListForm._csvDailyReportDataMap))
+            if (!DuplicateCheck(inputDateStr, DailyReportDataListForm.CsvDailyReportDataMap))
             {
-                if (errorMsg.Length > 0)
+                if (errMsg.Length > 0)
                 {
-                    errorMsg.Append(SpecialStr.AppConstants.NewLineStr);
+                    errMsg.Append(DailyReportEntity.NewLineStr);
                 }
-                errorMsg.Append(Properties.Resources.E0004);
+                errMsg.Append(Properties.Resources.E0004);
             }
 
-            if (errorMsg.Length > 0)
+            if (errMsg.Length > 0)
             {
-                MessageBox.Show(errorMsg.ToString());
+                MessageBox.Show(errMsg.ToString());
                 rtnFlag = false;
             }
 
@@ -250,9 +261,9 @@ namespace AutoReportWinApp
         /// <remarks>日付年月日の数値をチェック</remarks>
         /// <param name="dateStr">日付文字列</param>
         /// <returns>判定結果</returns>
-        private Boolean isDate(string dateStr)
+        private Boolean IsDate(string dateStr)
         {
-            var pattern = SpecialStr.AppConstants.SlashChar;
+            var pattern = slashChar;
             string[] dateEleArray = dateStr.Split(pattern);
             int dateYear = Int32.Parse(dateEleArray[0]);
             int dateMonth = Int32.Parse(dateEleArray[1]);
@@ -290,11 +301,11 @@ namespace AutoReportWinApp
             {
                 foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in dailyReportData)
                 {
-                    if (Int32.Parse(keyValuePair.Value.controlNum) == CreateDataColNum)
+                    if (Int32.Parse(keyValuePair.Value.ControlNum) == CreateDataControlNum)
                     {
                         continue;
                     }
-                    if (dateStr.Equals(keyValuePair.Value.date))
+                    if (dateStr.Equals(keyValuePair.Value.DateStr))
                     {
                         rtnFlag = false;
                         break;
@@ -312,6 +323,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void InputDailyReportForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            //データグリッドビューフォーカスをクリア
             DailyReportDataListForm.DataGridView1.CurrentCell = null;
         }
     }
