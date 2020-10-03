@@ -9,13 +9,14 @@ namespace AutoReportWinApp
     static class Program
     {
         /// <summary>
-        /// アプリケーションのメイン エントリ ポイントです。
+        /// アプリケーションのメインエントリポイントクラス
         /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            //日報データリストフォーム初期表示
             Application.Run(new DailyReportDataListForm());
         }
     }

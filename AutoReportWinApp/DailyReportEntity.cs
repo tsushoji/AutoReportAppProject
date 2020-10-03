@@ -2,39 +2,57 @@
 
 namespace AutoReportWinApp
 {
+
+    /// <summary>
+    /// 日報データエンティティクラス
+    /// </summary>
+    /// <remarks>日報データ用クラス</remarks>
     class DailyReportEntity
     {
+        //csvファイルを読み込み、日報データを表示している
+        //以下csvファイル用の改行文字列とする
+        private static readonly string UserNewLineStr = "@NewLine";
+        private static readonly string newLineStr = "\r\n";
+
         [Index(0)]
-        public string controlNum { get; set; }
+        public string ControlNum { get; set; }
         [Index(1)]
-        public string date { get; set; }
+        public string DateStr { get; set; }
         [Index(2)]
-        public string impContent { get; set; }
+        public string ImplementationContent { get; set; }
         [Index(3)]
-        public string schContent { get; set; }
+        public string TomorrowPlan { get; set; }
         [Index(4)]
-        public string task { get; set; }
-        public string getLineAtConma()
+        public string Task { get; set; }
+
+        public static string NewLineStr { get => newLineStr; }
+
+        /// <summary>
+        /// 「@NewLine」を改行に置換
+        /// </summary>
+        /// <param name="strWithUserNewLine">置換前文字列</param>
+        /// <returns>置換後文字列</returns>
+        public static string ReplaceToNewLineStr(string userNewLineStr)
         {
-            string[] properties = { controlNum, date, impContent, schContent, task };
-            string rtnLine = string.Join(SpecialStr.AppConstants.CommaStr, properties);
-            return rtnLine;
-        }
-        public static string replaceToStrWithNewLine(string strWithUserNewLine)
-        {
-            string rtnStr = strWithUserNewLine;
-            if (strWithUserNewLine.Contains(SetValue.AppConstants.UserNewLineStr))
+            string rtnStr = userNewLineStr;
+            if (userNewLineStr.Contains(UserNewLineStr))
             {
-                rtnStr = strWithUserNewLine.Replace(SetValue.AppConstants.UserNewLineStr, SpecialStr.AppConstants.NewLineStr);
+                rtnStr = userNewLineStr.Replace(UserNewLineStr, NewLineStr);
             }
             return rtnStr;
         }
-        public static string replaceToStrWithUserNewLine(string strWithNewLine)
+
+        /// <summary>
+        /// 改行を「@NewLine」に置換
+        /// </summary>
+        /// <param name="strWithNewLine">置換前文字列</param>
+        /// <returns>置換後文字列</returns>
+        public static string ReplaceToUserNewLineStr(string newLineStr)
         {
-            string rtnStr = strWithNewLine;
-            if (strWithNewLine.Contains(SpecialStr.AppConstants.NewLineStr))
+            string rtnStr = newLineStr;
+            if (newLineStr.Contains(NewLineStr))
             {
-                rtnStr = strWithNewLine.Replace(SpecialStr.AppConstants.NewLineStr, SetValue.AppConstants.UserNewLineStr);
+                rtnStr = newLineStr.Replace(NewLineStr, UserNewLineStr);
             }
             return rtnStr;
         }

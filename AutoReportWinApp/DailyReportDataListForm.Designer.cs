@@ -64,9 +64,9 @@
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(900, 325);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.upDailyReport_CellDoubleClick);
-            this.dataGridView1.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.upDailyReport_CellMouseEnter);
-            this.dataGridView1.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.upDailyReport_CellMouseLeave);
+            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ClickCreateData_CellDoubleClick);
+            this.dataGridView1.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DailyReportDataListFormDataGridView_CellMouseEnter);
+            this.dataGridView1.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.DailyReportDataListFormDataGridView_CellMouseLeave);
             // 
             // controlNum
             // 
@@ -204,7 +204,7 @@
             this.buttonFolderDialog.TabIndex = 15;
             this.buttonFolderDialog.Text = "フォルダダイアログ";
             this.buttonFolderDialog.UseVisualStyleBackColor = true;
-            this.buttonFolderDialog.Click += new System.EventHandler(this.buttonFolderDialog_Click);
+            this.buttonFolderDialog.Click += new System.EventHandler(this.ButtonFolderDialog_Click);
             // 
             // buttonDailyReportDataOutput
             // 
@@ -216,7 +216,7 @@
             this.buttonDailyReportDataOutput.TabIndex = 16;
             this.buttonDailyReportDataOutput.Text = "出力";
             this.buttonDailyReportDataOutput.UseVisualStyleBackColor = true;
-            this.buttonDailyReportDataOutput.Click += new System.EventHandler(this.buttonDailyReportDataOutput_Click);
+            this.buttonDailyReportDataOutput.Click += new System.EventHandler(this.ButtonOutputDailyReportData_Click);
             // 
             // DailyReportDataListForm
             // 
