@@ -43,6 +43,8 @@ namespace AutoReportWinApp
         public string TextBox2Text { get => this.textBox2.Text; set => this.textBox2.Text = value; }
         public string TextBox3Text { get => this.textBox3.Text; set => this.textBox3.Text = value; }
         public string TextBox4Text { get => this.textBox4.Text; set => this.textBox4.Text = value; }
+        public static string ReadingPointStr { get => readingPointStr; }
+        public static string ReplaceErrMsgFirstArgStr { get => replaceErrMsgFirstArgStr; }
 
         /// <summary>
         /// コンストラクタ
@@ -85,6 +87,9 @@ namespace AutoReportWinApp
                     //更新
                     case CreateDataMode.UPDATE:
                         this.UpdateDailyReportData();
+                        break;
+
+                    default:
                         break;
                 }
             }
@@ -225,16 +230,7 @@ namespace AutoReportWinApp
             if (errMsgEleList.Count > 0)
             {
                 string partialErrMsg = errMsgEleList.Aggregate((i, j) => i + readingPointStr + j);
-                errMsg.Append(Properties.Resources.E0003.Replace(replaceErrMsgFirstArgStr, partialErrMsg));
-            }
-
-            if (!Regex.IsMatch(inputDateStr, pattern) || !IsDate(inputDateStr))
-            {
-                if (errMsg.Length > 0)
-                {
-                    errMsg.Append(DailyReportEntity.NewLineStr);
-                }
-                errMsg.Append(Properties.Resources.E0002);
+                errMsg.Append(Properties.Resources.E0001.Replace(replaceErrMsgFirstArgStr, partialErrMsg));
             }
 
             if (!DuplicateCheck(inputDateStr, DailyReportDataListForm.CsvDailyReportDataMap))
@@ -243,7 +239,7 @@ namespace AutoReportWinApp
                 {
                     errMsg.Append(DailyReportEntity.NewLineStr);
                 }
-                errMsg.Append(Properties.Resources.E0004);
+                errMsg.Append(Properties.Resources.E0003);
             }
 
             if (errMsg.Length > 0)

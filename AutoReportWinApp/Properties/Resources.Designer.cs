@@ -61,7 +61,7 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
-        ///   csvデータファイルパスが入力されていません。 に類似しているローカライズされた文字列を検索します。
+        ///   {FIRSTARG}が入力されていません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string E0001 {
             get {
@@ -70,7 +70,7 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
-        ///   正しい形式で日付を入力してください。 に類似しているローカライズされた文字列を検索します。
+        ///   正しい形式で対象管理番号を入力してください。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string E0002 {
             get {
@@ -79,7 +79,7 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
-        ///   {FIRSTARG}が入力されていません。 に類似しているローカライズされた文字列を検索します。
+        ///   日報データが重複しています。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string E0003 {
             get {
@@ -88,20 +88,11 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
-        ///   日報データが重複しています。 に類似しているローカライズされた文字列を検索します。
+        ///   入力したフォルダパスは存在しません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string E0004 {
             get {
                 return ResourceManager.GetString("E0004", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   入力したフォルダパスは存在しません。 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string E0005 {
-            get {
-                return ResourceManager.GetString("E0005", resourceCulture);
             }
         }
         
@@ -156,6 +147,24 @@ namespace AutoReportWinApp.Properties {
         internal static string I0006 {
             get {
                 return ResourceManager.GetString("I0006", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   週報を出力いたしました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string I0007 {
+            get {
+                return ResourceManager.GetString("I0007", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   週報を上書きいたしました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string I0008 {
+            get {
+                return ResourceManager.GetString("I0008", resourceCulture);
             }
         }
         

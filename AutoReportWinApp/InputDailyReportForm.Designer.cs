@@ -193,6 +193,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "InputDailyReportForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "日報作成入力フォーム";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.InputDailyReportForm_FormClosed);
