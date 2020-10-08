@@ -53,6 +53,7 @@
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.controlNum,
@@ -77,35 +78,30 @@
             this.controlNum.MinimumWidth = 6;
             this.controlNum.Name = "controlNum";
             this.controlNum.ReadOnly = true;
-            this.controlNum.Width = 80;
             // 
             // date
             // 
             this.date.HeaderText = "日付";
             this.date.MinimumWidth = 6;
             this.date.Name = "date";
-            this.date.Width = 135;
             // 
             // impContent
             // 
             this.impContent.HeaderText = "実施内容";
             this.impContent.MinimumWidth = 6;
             this.impContent.Name = "impContent";
-            this.impContent.Width = 135;
             // 
             // scheContent
             // 
             this.scheContent.HeaderText = "翌日予定";
             this.scheContent.MinimumWidth = 6;
             this.scheContent.Name = "scheContent";
-            this.scheContent.Width = 135;
             // 
             // task
             // 
             this.task.HeaderText = "課題";
             this.task.MinimumWidth = 6;
             this.task.Name = "task";
-            this.task.Width = 135;
             // 
             // label4
             // 

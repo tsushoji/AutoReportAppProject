@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace AutoReportWinApp
@@ -259,8 +258,7 @@ namespace AutoReportWinApp
         /// <returns>判定結果</returns>
         private Boolean IsDate(string dateStr)
         {
-            var pattern = slashChar;
-            string[] dateEleArray = dateStr.Split(pattern);
+            string[] dateEleArray = dateStr.Split(slashChar);
             int dateYear = Int32.Parse(dateEleArray[0]);
             int dateMonth = Int32.Parse(dateEleArray[1]);
             if (DateTime.MinValue.Year > dateYear || DateTime.MaxValue.Year < dateYear)

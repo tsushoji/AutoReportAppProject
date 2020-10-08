@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -31,10 +32,18 @@ namespace AutoReportWinApp
         internal Dictionary<int, DailyReportEntity> CsvDailyReportDataMap;
         private string csvDailyReportDataPath;
 
-        private static string tmpWeeklyReportStr = "【日付】" + Environment.NewLine + "{RepFstStr}" + Environment.NewLine + "【実施内容】{RepScdStr}【翌日予定】{RepThdStr}【課題】{RepFthStr}";
+        private static string tmpWeeklyReportStr = "【日付】" + Environment.NewLine +
+                                                "{RepFstStr}" + Environment.NewLine +
+                                                "【実施内容】" + Environment.NewLine +
+                                                "{RepScdStr} " + Environment.NewLine +
+                                                "【翌日予定】" + Environment.NewLine +
+                                                "{RepThdStr} " + Environment.NewLine +
+                                                "【課題】" + Environment.NewLine +
+                                                "{RepFthStr}" + Environment.NewLine;
         private static readonly int createReportDataFirstColNum = 1;
         private static readonly string csvDailyReportParentFolderName = @"\data";
         private static readonly string initDialogBoxFolderPath = @"c:\";
+        private static readonly char commaChar = ',';
         private static readonly string dialogBoxCaption = "確認";
         private static readonly string dailyReportCsvFileNameWithExt = @"\daily_report_data.csv";
         private static readonly string weeklyReportTxtFileNameWithExt = @"\weekly_report.txt";
@@ -182,8 +191,6 @@ namespace AutoReportWinApp
             this.Activate();
             this.dataGridView1.CurrentCell = null;
             this.dataGridView1.RowHeadersVisible = false;
-            //データグリッドビュー列幅調整
-            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
         /// <summary>
@@ -381,7 +388,16 @@ namespace AutoReportWinApp
                         return;
                     }
                 }
-                MessageBox.Show("出力タイプが週報の場合、書き込み");
+                //出力タイプが週報の場合、書き込み
+                using (var writer = new StreamWriter(outputPath, appendFlg, Encoding.GetEncoding(WinCharCode)))
+                {
+                    //テキストボックスから管理番号を取得
+                    string[] strControlNumArray = this.textBox2.Text.Split(commaChar);
+                    //管理番号昇順にソートしたデータグリッドビューオブジェクトを取得
+                    //DataGridView1.Sort(DataGridView1.Columns[0], ListSortDirection.Descending);
+                    writer.Write("週報書き込み");
+                }
+
                 MessageBox.Show(outputWeeklyReportCompMsg);
                 this.textBox2.ResetText();
                 this.textBox3.ResetText();
