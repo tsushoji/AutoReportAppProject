@@ -125,9 +125,9 @@ namespace AutoReportWinApp
                     dailyReport.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
                     dailyReport.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                     dailyReport.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
-                    DailyReportDataListForm.CsvDailyReportDataMap.Add(DailyReportDataListForm.CsvDailyReportDataMap.Count, dailyReport);
+                    DailyReportDataListForm.dailyReportDataMap.Add(DailyReportDataListForm.dailyReportDataMap.Count, dailyReport);
                     //日報データファイルに書き込み
-                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.CsvDailyReportDataMap)
+                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.dailyReportDataMap)
                     {
                         csv.WriteRecord(keyValuePair.Value);
                         csv.NextRecord();
@@ -154,7 +154,7 @@ namespace AutoReportWinApp
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
                     int controlNum;
-                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.CsvDailyReportDataMap)
+                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.dailyReportDataMap)
                     {
                         controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
                         //更新する管理番号は日報データリストフォームで「CreateDataControlNum」プロパティーにセット
@@ -167,11 +167,11 @@ namespace AutoReportWinApp
                                 DailyReportDataListForm.DataGridView1.Rows[keyValuePair.Key].Cells[i].Value = writingData[i];
                             }
 
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].ControlNum = CreateDataControlNum.ToString();
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].DateStr = DailyReportEntity.ReplaceToUserNewLineStr(TextBox1Text);
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].ControlNum = CreateDataControlNum.ToString();
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].DateStr = DailyReportEntity.ReplaceToUserNewLineStr(TextBox1Text);
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                         }
                         //日報データファイルに書き込み
                         csv.WriteRecord(keyValuePair.Value);
@@ -232,7 +232,7 @@ namespace AutoReportWinApp
                 errMsg.Append(Properties.Resources.E0001.Replace(replaceErrMsgFirstArgStr, partialErrMsg));
             }
 
-            if (!DuplicateCheck(inputDateStr, DailyReportDataListForm.CsvDailyReportDataMap))
+            if (!DuplicateCheck(inputDateStr, DailyReportDataListForm.dailyReportDataMap))
             {
                 if (errMsg.Length > 0)
                 {

@@ -29,7 +29,7 @@ namespace AutoReportWinApp
     /// <remarks>作成した日報データを表示するフォーム</remarks>
     public partial class DailyReportDataListForm : Form
     {
-        internal Dictionary<int, DailyReportEntity> CsvDailyReportDataMap;
+        internal Dictionary<int, DailyReportEntity> dailyReportDataMap;
         private string csvDailyReportDataPath;
 
         private static string tmpWeeklyReportStr = "【日付】" + Environment.NewLine +
@@ -61,7 +61,7 @@ namespace AutoReportWinApp
         public DailyReportDataListForm()
         {
             InitializeComponent();
-            this.CsvDailyReportDataMap = new Dictionary<int, DailyReportEntity>();
+            this.dailyReportDataMap = new Dictionary<int, DailyReportEntity>();
             CsvDailyReportDataPath = this.GetCsvDailyReportDataPath();
             this.InitDailyReportDataReader(CsvDailyReportDataPath);
         }
@@ -101,7 +101,7 @@ namespace AutoReportWinApp
                     foreach (DailyReportEntity dailyReport in dailyReports)
                     {
                         DataGridView1.Rows.Add(dailyReport.ControlNum, dailyReport.DateStr, DailyReportEntity.ReplaceToNewLineStr(dailyReport.ImplementationContent), DailyReportEntity.ReplaceToNewLineStr(dailyReport.TomorrowPlan), DailyReportEntity.ReplaceToNewLineStr(dailyReport.Task));
-                        this.CsvDailyReportDataMap.Add(rowIndex, dailyReport);
+                        this.dailyReportDataMap.Add(rowIndex, dailyReport);
                         rowIndex++;
                     }
                 }
@@ -133,10 +133,10 @@ namespace AutoReportWinApp
                     inputDailyReportForm.DailyReportDataListForm = this;
                     inputDailyReportForm.CreateDataMode = CreateDataMode.APPEND;
                     //日報データが1件以上ある場合
-                    if (this.CsvDailyReportDataMap.Count > 0)
+                    if (this.dailyReportDataMap.Count > 0)
                     {
                         //日報データ作成管理番号をプロパティにセット
-                        inputDailyReportForm.CreateDataControlNum = this.GetMaxControlNum(this.CsvDailyReportDataMap) + 1;
+                        inputDailyReportForm.CreateDataControlNum = this.GetMaxControlNum(this.dailyReportDataMap) + 1;
                     }
                     //日報データがない場合
                     else
