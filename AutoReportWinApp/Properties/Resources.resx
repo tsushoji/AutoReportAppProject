@@ -129,6 +129,9 @@
   <data name="E0004" xml:space="preserve">
     <value>入力したフォルダパスは存在しません。</value>
   </data>
+  <data name="E0005" xml:space="preserve">
+    <value>入力された対象管理番号が重複しています。</value>
+  </data>
   <data name="I0001" xml:space="preserve">
     <value>日報データを追加しました。</value>
   </data>
@@ -139,7 +142,7 @@
     <value>日報データを出力いたしました。</value>
   </data>
   <data name="I0004" xml:space="preserve">
-    <value>日報データを上書きいたしました。</value>
+    <value>日報データを上書きし、出力いたしました。</value>
   </data>
   <data name="I0005" xml:space="preserve">
     <value>キャンセルしました。</value>
@@ -152,6 +155,9 @@
   </data>
   <data name="I0008" xml:space="preserve">
     <value>週報を上書きいたしました。</value>
+  </data>
+  <data name="I0009" xml:space="preserve">
+    <value>週報を追記いたしました。</value>
   </data>
   <data name="W0001" xml:space="preserve">
     <value>同じファイルパスが存在します。上書きしてもよろしいでしょうか。</value>

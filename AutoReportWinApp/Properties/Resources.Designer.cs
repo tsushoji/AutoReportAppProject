@@ -97,6 +97,15 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
+        ///   入力された対象管理番号が重複しています。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string E0005 {
+            get {
+                return ResourceManager.GetString("E0005", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   日報データを追加しました。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string I0001 {
@@ -124,7 +133,7 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
-        ///   日報データを上書きいたしました。 に類似しているローカライズされた文字列を検索します。
+        ///   日報データを上書きし、出力いたしました。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string I0004 {
             get {
@@ -165,6 +174,15 @@ namespace AutoReportWinApp.Properties {
         internal static string I0008 {
             get {
                 return ResourceManager.GetString("I0008", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   週報を追記いたしました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string I0009 {
+            get {
+                return ResourceManager.GetString("I0009", resourceCulture);
             }
         }
         

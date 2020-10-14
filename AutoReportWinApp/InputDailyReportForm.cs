@@ -30,7 +30,7 @@ namespace AutoReportWinApp
         private CreateDataMode createDataMode;
         private int createDataControlNum;
 
-        private static readonly string RegExpDate = @"^\d{4}/\d{2}/\d{2}$";
+        private static readonly string regExpDate = @"^\d{4}/\d{2}/\d{2}$";
         private static readonly char slashChar = '/';
         private static readonly string readingPointStr = "、";
         private static readonly string replaceErrMsgFirstArgStr = "{FIRSTARG}";
@@ -201,7 +201,7 @@ namespace AutoReportWinApp
             var inputTomorrowPlanErrMsgEle = this.label3.Text.Substring(0, 4);
             var inputTaskErrMsgEle = this.label4.Text.Substring(0, 2);
 
-            var pattern = RegExpDate;
+            var pattern = regExpDate;
             var errMsgEleList = new List<string>();
             var errMsg = new StringBuilder();
             Boolean rtnFlag = true;
@@ -286,7 +286,7 @@ namespace AutoReportWinApp
         /// <remarks>「日付」で日報作成データ重複をチェック</remarks>
         /// <param name="dateStr">日付文字列</param>
         /// <param name="dailyReportData">作成済み日報データ</param>
-        /// <returns>dataの平均値(出力)</returns>
+        /// <returns>判定結果</returns>
         private Boolean DuplicateCheck(string dateStr, Dictionary<int, DailyReportEntity> dailyReportData)
         {
             Boolean rtnFlag = true;

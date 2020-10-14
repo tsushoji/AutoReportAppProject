@@ -39,7 +39,8 @@ namespace AutoReportWinApp
                                                 "【翌日予定】" + Environment.NewLine +
                                                 "{RepThdStr} " + Environment.NewLine +
                                                 "【課題】" + Environment.NewLine +
-                                                "{RepFthStr}" + Environment.NewLine;
+                                                "{RepFthStr}" + Environment.NewLine +
+                                                Environment.NewLine;
         private static readonly int createReportDataFirstColNum = 1;
         private static readonly string csvDailyReportParentFolderName = @"\data";
         private static readonly string initDialogBoxFolderPath = @"c:\";
@@ -48,7 +49,11 @@ namespace AutoReportWinApp
         private static readonly string dailyReportCsvFileNameWithExt = @"\daily_report_data.csv";
         private static readonly string weeklyReportTxtFileNameWithExt = @"\weekly_report.txt";
         private static readonly string winCharCode = "Shift_JIS";
-        private static readonly string RegExpTarMngNum = @"^([1-9]{1}[0-9]{0,}){1}(\,{1}[1-9]{1}[0-9]{0,}){0,4}?$";
+        private static readonly string regExpTarMngNum = @"^([1-9]{1}[0-9]{0,}){1}(\,{1}[1-9]{1}[0-9]{0,}){0,4}?$";
+        private static readonly string repFstStr = "{RepFstStr}";
+        private static readonly string repScdStr = "{RepScdStr}";
+        private static readonly string repThdStr = "{RepThdStr}";
+        private static readonly string repFthStr = "{RepFthStr}";
 
         public string CsvDailyReportDataPath { get => csvDailyReportDataPath; set => csvDailyReportDataPath = value; }
         public DataGridView DataGridView1 { get => this.dataGridView1; set => this.dataGridView1 = value; }
@@ -170,7 +175,7 @@ namespace AutoReportWinApp
         private int GetMaxControlNum(Dictionary<int, DailyReportEntity> dataReportMap)
         {
             var controlNumList = new List<int>();
-            int controlNum = 0;
+            int controlNum;
             foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in dataReportMap)
             {
                 controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
@@ -310,9 +315,7 @@ namespace AutoReportWinApp
             if (System.IO.Directory.Exists(this.textBox1.Text))
             {
                 Boolean appendFlg = false;
-                string outputPath;
-                outputPath = this.textBox1.Text + dailyReportCsvFileNameWithExt;
-
+                var outputPath = this.textBox1.Text + dailyReportCsvFileNameWithExt;
                 string outputDailyReportDataCompMsg = Properties.Resources.I0003;
                 //出力ファイルパスが同名の場合
                 if (File.Exists(outputPath))
@@ -320,33 +323,34 @@ namespace AutoReportWinApp
                     DialogResult dialogResult = MessageBox.Show(Properties.Resources.W0001, dialogBoxCaption, MessageBoxButtons.YesNo);
                     if (dialogResult == System.Windows.Forms.DialogResult.No)
                     {
-                        //上書きしない
                         MessageBox.Show(Properties.Resources.I0005);
-                        textBox1.ResetText();
+                        //「出力フォルダパス」リセット
+                        this.textBox1.ResetText();
                         return;
                     }
                     else if (dialogResult == System.Windows.Forms.DialogResult.Yes)
                     {
-                        //上書きする
+                        //上書きコピー
                         outputDailyReportDataCompMsg = Properties.Resources.I0004;
                         appendFlg = true;
                     }
                     else
                     {
-                        textBox1.ResetText();
+                        //「出力フォルダパス」リセット
+                        this.textBox1.ResetText();
                         //メソッドを抜ける
                         return;
                     }
                 }
                 File.Copy(CsvDailyReportDataPath, outputPath, appendFlg);
-
                 MessageBox.Show(outputDailyReportDataCompMsg);
-                this.textBox1.ResetText();
             }
             else
             {
                 MessageBox.Show(Properties.Resources.E0004);
             }
+            //「出力フォルダパス」リセット
+            this.textBox1.ResetText();
         }
 
         /// <summary>
@@ -368,20 +372,18 @@ namespace AutoReportWinApp
                     DialogResult dialogResult = MessageBox.Show(Properties.Resources.W0001, dialogBoxCaption, MessageBoxButtons.YesNo);
                     if (dialogResult == System.Windows.Forms.DialogResult.No)
                     {
-                        //上書きしない
-                        MessageBox.Show(Properties.Resources.I0005);
-                        this.textBox2.ResetText();
-                        this.textBox3.ResetText();
-                        return;
+                        //追記する
+                        MessageBox.Show(Properties.Resources.I0009);
+                        appendFlg = true;
                     }
                     else if (dialogResult == System.Windows.Forms.DialogResult.Yes)
                     {
                         //上書きする
                         outputWeeklyReportCompMsg = Properties.Resources.I0008;
-                        appendFlg = true;
                     }
                     else
                     {
+                        //「出力フォルダパス」、「対象管理番号」リセット
                         this.textBox2.ResetText();
                         this.textBox3.ResetText();
                         //メソッドを抜ける
@@ -391,21 +393,50 @@ namespace AutoReportWinApp
                 //出力タイプが週報の場合、書き込み
                 using (var writer = new StreamWriter(outputPath, appendFlg, Encoding.GetEncoding(WinCharCode)))
                 {
-                    //テキストボックスから管理番号を取得
-                    string[] strControlNumArray = this.textBox2.Text.Split(commaChar);
-                    //管理番号昇順にソートしたデータグリッドビューオブジェクトを取得
-                    //DataGridView1.Sort(DataGridView1.Columns[0], ListSortDirection.Descending);
-                    writer.Write("週報書き込み");
-                }
+                    //対象管理番号から管理番号を取得
+                    string[] strControlNumArray = this.textBox3.Text.Split(commaChar);
+                    //データグリッドビューから日報データを取得
+                    var outputWeeklyReportDataList = new List<DailyReportEntity>();
+                    for (int i = 0; i < DataGridView1.Rows.Count - 1; i++)
+                    {
+                        if (strControlNumArray.Contains(DataGridView1.Rows[i].Cells[0].Value.ToString()))
+                        {
+                            var reportData = new DailyReportEntity();
+                            reportData.ControlNum = DataGridView1.Rows[i].Cells[0].Value.ToString();
+                            reportData.DateStr = DataGridView1.Rows[i].Cells[1].Value.ToString();
+                            reportData.ImplementationContent = DataGridView1.Rows[i].Cells[2].Value.ToString();
+                            reportData.TomorrowPlan = DataGridView1.Rows[i].Cells[3].Value.ToString();
+                            reportData.Task = DataGridView1.Rows[i].Cells[4].Value.ToString();
+                            outputWeeklyReportDataList.Add(reportData);
+                        }
+                    }
 
+                    //日付で昇順に並べる
+                    outputWeeklyReportDataList = outputWeeklyReportDataList.OrderBy(value => DateTime.Parse(value.DateStr)).ToList();
+                    //週報文字列生成
+                    string outputWeeklyReportByDateStr;
+                    var outputWeeklyReportStr = new StringBuilder();
+                    foreach (var outputWeeklyReportData in outputWeeklyReportDataList)
+                    {
+                        outputWeeklyReportByDateStr = tmpWeeklyReportStr.Replace(repFstStr, outputWeeklyReportData.DateStr);
+                        outputWeeklyReportByDateStr = outputWeeklyReportByDateStr.Replace(repScdStr, outputWeeklyReportData.ImplementationContent);
+                        outputWeeklyReportByDateStr = outputWeeklyReportByDateStr.Replace(repThdStr, outputWeeklyReportData.TomorrowPlan);
+                        outputWeeklyReportByDateStr = outputWeeklyReportByDateStr.Replace(repFthStr, outputWeeklyReportData.Task);
+                        outputWeeklyReportStr.Append(outputWeeklyReportByDateStr);
+                    }
+                    //週報書き込み
+                    writer.Write(outputWeeklyReportStr.ToString());
+                }
                 MessageBox.Show(outputWeeklyReportCompMsg);
-                this.textBox2.ResetText();
+                //「対象管理番号」リセット
                 this.textBox3.ResetText();
             }
             else
             {
                 MessageBox.Show(Properties.Resources.E0004);
             }
+            //「出力フォルダパス」リセット
+            this.textBox2.ResetText();
         }
 
         /// <summary>
@@ -459,7 +490,7 @@ namespace AutoReportWinApp
                 if (!errMsg.ToString().Contains(this.label4.Text + this.label5.Text.Substring(0, 6)))
                 {
                     //形式が正しいかチェック
-                    var pattern = RegExpTarMngNum;
+                    var pattern = regExpTarMngNum;
                     if (!Regex.IsMatch(this.textBox3.Text, pattern))
                     {
                         if (errMsg.Length > 0)
@@ -468,6 +499,19 @@ namespace AutoReportWinApp
                         }
                         errMsg.Append(Properties.Resources.E0002);
                     }
+                    //形式が正しくない場合、チェックしない
+                    if (!errMsg.ToString().Contains(Properties.Resources.E0002))
+                    {
+                        //選択した対象管理番号が重複していないかチェック
+                        if (!DuplicateStrArrayCheck(this.textBox3.Text.Split(commaChar)))
+                        {
+                            if (errMsg.Length > 0)
+                            {
+                                errMsg.Append(DailyReportEntity.NewLineStr);
+                            }
+                            errMsg.Append(Properties.Resources.E0005);
+                        }
+                    }
                 }
             }
 
@@ -475,6 +519,33 @@ namespace AutoReportWinApp
             {
                 MessageBox.Show(errMsg.ToString());
                 rtnFlag = false;
+            }
+            return rtnFlag;
+        }
+
+        /// <summary>
+        /// 文字列配列要素重複チェック
+        /// </summary>
+        /// <remarks>文字列配列要素の重複をチェック</remarks>
+        /// <param name="strArray">文字列配列</param>
+        /// <returns>判定結果</returns>
+        private Boolean DuplicateStrArrayCheck(string[] strArray)
+        {
+            Boolean rtnFlag = true;
+
+            if (strArray.Length > 0)
+            {
+                for (int i = 0; i < strArray.Length - 1; i++)
+                {
+                    for (int j = i + 1; j < strArray.Length; j++)
+                    {
+                        if (strArray[i].Equals(strArray[j]))
+                        {
+                            rtnFlag = false;
+                            break;
+                        }
+                    }
+                }
             }
             return rtnFlag;
         }
