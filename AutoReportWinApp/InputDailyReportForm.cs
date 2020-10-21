@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace AutoReportWinApp
@@ -31,7 +30,6 @@ namespace AutoReportWinApp
         private CreateDataMode createDataMode;
         private int createDataControlNum;
 
-        private static readonly string RegExpDate = @"^\d{4}/\d{2}/\d{2}$";
         private static readonly char slashChar = '/';
         private static readonly string readingPointStr = "、";
         private static readonly string replaceErrMsgFirstArgStr = "{FIRSTARG}";
@@ -43,6 +41,8 @@ namespace AutoReportWinApp
         public string TextBox2Text { get => this.textBox2.Text; set => this.textBox2.Text = value; }
         public string TextBox3Text { get => this.textBox3.Text; set => this.textBox3.Text = value; }
         public string TextBox4Text { get => this.textBox4.Text; set => this.textBox4.Text = value; }
+        public static string ReadingPointStr { get => readingPointStr; }
+        public static string ReplaceErrMsgFirstArgStr { get => replaceErrMsgFirstArgStr; }
 
         /// <summary>
         /// コンストラクタ
@@ -73,7 +73,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonCreateData_Click(object sender, EventArgs e)
         {
-            if (this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
+            if (!this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
             {
                 switch (CreateDataMode)
                 {
@@ -85,6 +85,9 @@ namespace AutoReportWinApp
                     //更新
                     case CreateDataMode.UPDATE:
                         this.UpdateDailyReportData();
+                        break;
+
+                    default:
                         break;
                 }
             }
@@ -121,9 +124,9 @@ namespace AutoReportWinApp
                     dailyReport.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
                     dailyReport.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                     dailyReport.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
-                    DailyReportDataListForm.CsvDailyReportDataMap.Add(DailyReportDataListForm.CsvDailyReportDataMap.Count, dailyReport);
+                    DailyReportDataListForm.dailyReportDataMap.Add(DailyReportDataListForm.dailyReportDataMap.Count, dailyReport);
                     //日報データファイルに書き込み
-                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.CsvDailyReportDataMap)
+                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.dailyReportDataMap)
                     {
                         csv.WriteRecord(keyValuePair.Value);
                         csv.NextRecord();
@@ -149,10 +152,9 @@ namespace AutoReportWinApp
                 using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    int controlNum;
-                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.CsvDailyReportDataMap)
+                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.dailyReportDataMap)
                     {
-                        controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
+                        int controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
                         //更新する管理番号は日報データリストフォームで「CreateDataControlNum」プロパティーにセット
                         if (controlNum == CreateDataControlNum)
                         {
@@ -163,11 +165,11 @@ namespace AutoReportWinApp
                                 DailyReportDataListForm.DataGridView1.Rows[keyValuePair.Key].Cells[i].Value = writingData[i];
                             }
 
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].ControlNum = CreateDataControlNum.ToString();
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].DateStr = DailyReportEntity.ReplaceToUserNewLineStr(TextBox1Text);
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
-                            DailyReportDataListForm.CsvDailyReportDataMap[keyValuePair.Key].Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].ControlNum = CreateDataControlNum.ToString();
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].DateStr = DailyReportEntity.ReplaceToUserNewLineStr(TextBox1Text);
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
+                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                         }
                         //日報データファイルに書き込み
                         csv.WriteRecord(keyValuePair.Value);
@@ -197,10 +199,8 @@ namespace AutoReportWinApp
             var inputTomorrowPlanErrMsgEle = this.label3.Text.Substring(0, 4);
             var inputTaskErrMsgEle = this.label4.Text.Substring(0, 2);
 
-            var pattern = RegExpDate;
             var errMsgEleList = new List<string>();
             var errMsg = new StringBuilder();
-            Boolean rtnFlag = true;
 
             if (string.IsNullOrEmpty(inputDateStr))
             {
@@ -225,34 +225,24 @@ namespace AutoReportWinApp
             if (errMsgEleList.Count > 0)
             {
                 string partialErrMsg = errMsgEleList.Aggregate((i, j) => i + readingPointStr + j);
-                errMsg.Append(Properties.Resources.E0003.Replace(replaceErrMsgFirstArgStr, partialErrMsg));
+                errMsg.Append(Properties.Resources.E0001.Replace(replaceErrMsgFirstArgStr, partialErrMsg));
             }
 
-            if (!Regex.IsMatch(inputDateStr, pattern) || !IsDate(inputDateStr))
+            if (!DuplicateCheck(inputDateStr, DailyReportDataListForm.dailyReportDataMap))
             {
                 if (errMsg.Length > 0)
                 {
                     errMsg.Append(DailyReportEntity.NewLineStr);
                 }
-                errMsg.Append(Properties.Resources.E0002);
-            }
-
-            if (!DuplicateCheck(inputDateStr, DailyReportDataListForm.CsvDailyReportDataMap))
-            {
-                if (errMsg.Length > 0)
-                {
-                    errMsg.Append(DailyReportEntity.NewLineStr);
-                }
-                errMsg.Append(Properties.Resources.E0004);
+                errMsg.Append(Properties.Resources.E0003);
             }
 
             if (errMsg.Length > 0)
             {
                 MessageBox.Show(errMsg.ToString());
-                rtnFlag = false;
             }
 
-            return rtnFlag;
+            return errMsg.Length > 0;
         }
 
         /// <summary>
@@ -263,8 +253,7 @@ namespace AutoReportWinApp
         /// <returns>判定結果</returns>
         private Boolean IsDate(string dateStr)
         {
-            var pattern = slashChar;
-            string[] dateEleArray = dateStr.Split(pattern);
+            string[] dateEleArray = dateStr.Split(slashChar);
             int dateYear = Int32.Parse(dateEleArray[0]);
             int dateMonth = Int32.Parse(dateEleArray[1]);
             if (DateTime.MinValue.Year > dateYear || DateTime.MaxValue.Year < dateYear)
@@ -292,7 +281,7 @@ namespace AutoReportWinApp
         /// <remarks>「日付」で日報作成データ重複をチェック</remarks>
         /// <param name="dateStr">日付文字列</param>
         /// <param name="dailyReportData">作成済み日報データ</param>
-        /// <returns>dataの平均値(出力)</returns>
+        /// <returns>判定結果</returns>
         private Boolean DuplicateCheck(string dateStr, Dictionary<int, DailyReportEntity> dailyReportData)
         {
             Boolean rtnFlag = true;

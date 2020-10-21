@@ -11,8 +11,8 @@ namespace AutoReportWinApp
     {
         private InputDailyReportForm inputDailyReportForm;
 
-        private static readonly string InputCalenderDataFormItemName = "textBox1";
-        private static readonly string DateFormat = "yyyy/MM/dd";
+        private static readonly string inputCalenderDataFormItemName = "textBox1";
+        private static readonly string dateFormat = "yyyy/MM/dd";
 
         /// <summary>
         /// コンストラクタ
@@ -34,7 +34,7 @@ namespace AutoReportWinApp
         private void MousePointer_DataSelected(object sender, DateRangeEventArgs e)
         {
             // カレンダーフォームで取得した日付文字列を入力日報フォームの「日付」項目に入れる
-            this.inputDailyReportForm.Controls[InputCalenderDataFormItemName].Text = monthCalendar1.SelectionRange.Start.Date.ToString(DateFormat);
+            this.inputDailyReportForm.Controls[inputCalenderDataFormItemName].Text = monthCalendar1.SelectionRange.Start.Date.ToString(dateFormat);
             this.Close();
         }
     }

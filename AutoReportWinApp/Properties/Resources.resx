@@ -118,19 +118,22 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="E0001" xml:space="preserve">
-    <value>csvデータファイルパスが入力されていません。</value>
-  </data>
-  <data name="E0002" xml:space="preserve">
-    <value>正しい形式で日付を入力してください。</value>
-  </data>
-  <data name="E0003" xml:space="preserve">
     <value>{FIRSTARG}が入力されていません。</value>
   </data>
-  <data name="E0004" xml:space="preserve">
+  <data name="E0002" xml:space="preserve">
+    <value>正しい形式で対象管理番号を入力してください。</value>
+  </data>
+  <data name="E0003" xml:space="preserve">
     <value>日報データが重複しています。</value>
   </data>
-  <data name="E0005" xml:space="preserve">
+  <data name="E0004" xml:space="preserve">
     <value>入力したフォルダパスは存在しません。</value>
+  </data>
+  <data name="E0005" xml:space="preserve">
+    <value>入力された対象管理番号が重複しています。</value>
+  </data>
+  <data name="E0006" xml:space="preserve">
+    <value>入力された対象管理番号はデータリストにはありません。</value>
   </data>
   <data name="I0001" xml:space="preserve">
     <value>日報データを追加しました。</value>
@@ -142,13 +145,22 @@
     <value>日報データを出力いたしました。</value>
   </data>
   <data name="I0004" xml:space="preserve">
-    <value>日報データを上書きいたしました。</value>
+    <value>日報データを上書きし、出力いたしました。</value>
   </data>
   <data name="I0005" xml:space="preserve">
     <value>キャンセルしました。</value>
   </data>
   <data name="I0006" xml:space="preserve">
     <value>フォルダを選択してください。</value>
+  </data>
+  <data name="I0007" xml:space="preserve">
+    <value>週報を出力いたしました。</value>
+  </data>
+  <data name="I0008" xml:space="preserve">
+    <value>週報を上書きいたしました。</value>
+  </data>
+  <data name="I0009" xml:space="preserve">
+    <value>週報を追記いたしました。</value>
   </data>
   <data name="W0001" xml:space="preserve">
     <value>同じファイルパスが存在します。上書きしてもよろしいでしょうか。</value>
