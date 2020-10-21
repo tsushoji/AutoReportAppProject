@@ -132,6 +132,9 @@
   <data name="E0005" xml:space="preserve">
     <value>入力された対象管理番号が重複しています。</value>
   </data>
+  <data name="E0006" xml:space="preserve">
+    <value>入力された対象管理番号はデータリストにはありません。</value>
+  </data>
   <data name="I0001" xml:space="preserve">
     <value>日報データを追加しました。</value>
   </data>

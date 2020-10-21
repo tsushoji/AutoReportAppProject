@@ -30,7 +30,6 @@ namespace AutoReportWinApp
         private CreateDataMode createDataMode;
         private int createDataControlNum;
 
-        private static readonly string regExpDate = @"^\d{4}/\d{2}/\d{2}$";
         private static readonly char slashChar = '/';
         private static readonly string readingPointStr = "、";
         private static readonly string replaceErrMsgFirstArgStr = "{FIRSTARG}";
@@ -74,7 +73,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonCreateData_Click(object sender, EventArgs e)
         {
-            if (this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
+            if (!this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
             {
                 switch (CreateDataMode)
                 {
@@ -153,10 +152,9 @@ namespace AutoReportWinApp
                 using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    int controlNum;
                     foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.dailyReportDataMap)
                     {
-                        controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
+                        int controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
                         //更新する管理番号は日報データリストフォームで「CreateDataControlNum」プロパティーにセット
                         if (controlNum == CreateDataControlNum)
                         {
@@ -201,10 +199,8 @@ namespace AutoReportWinApp
             var inputTomorrowPlanErrMsgEle = this.label3.Text.Substring(0, 4);
             var inputTaskErrMsgEle = this.label4.Text.Substring(0, 2);
 
-            var pattern = regExpDate;
             var errMsgEleList = new List<string>();
             var errMsg = new StringBuilder();
-            Boolean rtnFlag = true;
 
             if (string.IsNullOrEmpty(inputDateStr))
             {
@@ -244,10 +240,9 @@ namespace AutoReportWinApp
             if (errMsg.Length > 0)
             {
                 MessageBox.Show(errMsg.ToString());
-                rtnFlag = false;
             }
 
-            return rtnFlag;
+            return errMsg.Length > 0;
         }
 
         /// <summary>

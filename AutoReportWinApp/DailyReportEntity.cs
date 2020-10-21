@@ -12,7 +12,7 @@ namespace AutoReportWinApp
     {
         //csvファイルを読み込み、日報データを表示している
         //以下csvファイル用の改行文字列とする
-        private static readonly string UserNewLineStr = "@NewLine";
+        private static readonly string userNewLineStr = "@NewLine";
         private static readonly string newLineStr = "\r\n";
 
         [Index(0)]
@@ -33,12 +33,12 @@ namespace AutoReportWinApp
         /// </summary>
         /// <param name="strWithUserNewLine">置換前文字列</param>
         /// <returns>置換後文字列</returns>
-        public static string ReplaceToNewLineStr(string userNewLineStr)
+        public static string ReplaceToNewLineStr(string strWithUserNewLine)
         {
-            string rtnStr = userNewLineStr;
-            if (userNewLineStr.Contains(UserNewLineStr))
+            string rtnStr = strWithUserNewLine;
+            if (rtnStr.Contains(userNewLineStr))
             {
-                rtnStr = userNewLineStr.Replace(UserNewLineStr, NewLineStr);
+                rtnStr = rtnStr.Replace(userNewLineStr, NewLineStr);
             }
             return rtnStr;
         }
@@ -48,12 +48,12 @@ namespace AutoReportWinApp
         /// </summary>
         /// <param name="strWithNewLine">置換前文字列</param>
         /// <returns>置換後文字列</returns>
-        public static string ReplaceToUserNewLineStr(string newLineStr)
+        public static string ReplaceToUserNewLineStr(string strWithNewLine)
         {
-            string rtnStr = newLineStr;
-            if (newLineStr.Contains(NewLineStr))
+            string rtnStr = strWithNewLine;
+            if (rtnStr.Contains(NewLineStr))
             {
-                rtnStr = newLineStr.Replace(NewLineStr, UserNewLineStr);
+                rtnStr = rtnStr.Replace(NewLineStr, userNewLineStr);
             }
             return rtnStr;
         }

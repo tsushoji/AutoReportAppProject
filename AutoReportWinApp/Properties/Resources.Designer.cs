@@ -106,6 +106,15 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
+        ///   入力された対象管理番号はデータリストにはありません。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string E0006 {
+            get {
+                return ResourceManager.GetString("E0006", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   日報データを追加しました。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string I0001 {
