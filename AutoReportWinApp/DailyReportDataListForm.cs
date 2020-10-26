@@ -28,7 +28,6 @@ namespace AutoReportWinApp
     /// <remarks>作成した日報データを表示するフォーム</remarks>
     public partial class DailyReportDataListForm : Form
     {
-        internal Dictionary<int, DailyReportEntity> dailyReportDataMap;
         private string csvDailyReportDataPath;
 
         private static string tmpWeeklyReportStr = "【日付】" + Environment.NewLine +
@@ -65,7 +64,6 @@ namespace AutoReportWinApp
         public DailyReportDataListForm()
         {
             InitializeComponent();
-            this.dailyReportDataMap = new Dictionary<int, DailyReportEntity>();
             CsvDailyReportDataPath = this.GetCsvDailyReportDataPath();
             this.InitDailyReportDataReader(CsvDailyReportDataPath);
         }
@@ -97,7 +95,6 @@ namespace AutoReportWinApp
                 using (var reader = new StreamReader(csvDailyReportDataPath, Encoding.GetEncoding(WinCharCode)))
                 using (var csv = new CsvReader(reader, CultureInfo.CurrentCulture))
                 {
-                    int rowIndex = 0;
                     // ヘッダーの有無
                     csv.Configuration.HasHeaderRecord = false;
                     // データ読み出し（IEnumerable<Item>として受け取る）
@@ -105,8 +102,6 @@ namespace AutoReportWinApp
                     foreach (DailyReportEntity dailyReport in dailyReports)
                     {
                         DataGridView1.Rows.Add(dailyReport.ControlNum, dailyReport.DateStr, DailyReportEntity.ReplaceToNewLineStr(dailyReport.ImplementationContent), DailyReportEntity.ReplaceToNewLineStr(dailyReport.TomorrowPlan), DailyReportEntity.ReplaceToNewLineStr(dailyReport.Task));
-                        this.dailyReportDataMap.Add(rowIndex, dailyReport);
-                        rowIndex++;
                     }
                 }
             }
@@ -137,10 +132,10 @@ namespace AutoReportWinApp
                     inputDailyReportForm.DailyReportDataListForm = this;
                     inputDailyReportForm.CreateDataMode = CreateDataMode.APPEND;
                     //日報データが1件以上ある場合
-                    if (this.dailyReportDataMap.Count > 0)
+                    if (DataGridView1.Rows.Count > 1)
                     {
                         //日報データ作成管理番号をプロパティにセット
-                        inputDailyReportForm.CreateDataControlNum = this.GetMaxControlNum(this.dailyReportDataMap) + 1;
+                        inputDailyReportForm.CreateDataControlNum = this.GetMaxDataGridControlNum(DataGridView1) + 1;
                     }
                     //日報データがない場合
                     else
@@ -153,6 +148,7 @@ namespace AutoReportWinApp
                     if (e.RowIndex != DataGridView1.Rows.Count - 1)
                     {
                         inputDailyReportForm.CreateDataMode = CreateDataMode.UPDATE;
+                        inputDailyReportForm.UpdateDataGridViewRowIndex = e.RowIndex;
                         inputDailyReportForm.CreateDataControlNum = Int32.Parse(DataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString());
                         inputDailyReportForm.TextBox1Text = DataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
                         inputDailyReportForm.TextBox2Text = DataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
@@ -169,17 +165,19 @@ namespace AutoReportWinApp
         /// 日報データリストの最大管理番号取得
         /// </summary>
         /// <remarks>日報データ新規作成時、必要</remarks>
-        /// <param name="dataReportMap">日報データ辞書</param>
+        /// <param name="dataGridView">データグリッドビューオブジェクト</param>
         /// <returns>最大管理番号</returns>
-        private int GetMaxControlNum(Dictionary<int, DailyReportEntity> dataReportMap)
+        private int GetMaxDataGridControlNum(DataGridView dataGridView)
         {
-            var controlNumList = new List<int>();
-            foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in dataReportMap)
+            var dataGridViewControlNumList = new List<int>();
+            foreach (var row in DataGridView1.Rows.Cast<DataGridViewRow>())
             {
-                int controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
-                controlNumList.Add(controlNum);
+                if (row.Cells[0].Value != null)
+                {
+                    dataGridViewControlNumList.Add(Int32.Parse(row.Cells[0].Value.ToString()));
+                }
             }
-            return controlNumList.Max();
+            return dataGridViewControlNumList.Max();
         }
 
         /// <summary>

@@ -29,6 +29,7 @@ namespace AutoReportWinApp
         private DailyReportDataListForm dailyReportDataListForm;
         private CreateDataMode createDataMode;
         private int createDataControlNum;
+        private int updateDataGridViewRowIndex;
 
         private static readonly char slashChar = '/';
         private static readonly string readingPointStr = "、";
@@ -43,6 +44,7 @@ namespace AutoReportWinApp
         public string TextBox4Text { get => this.textBox4.Text; set => this.textBox4.Text = value; }
         public static string ReadingPointStr { get => readingPointStr; }
         public static string ReplaceErrMsgFirstArgStr { get => replaceErrMsgFirstArgStr; }
+        public int UpdateDataGridViewRowIndex { get => this.updateDataGridViewRowIndex; set => this.updateDataGridViewRowIndex = value; }
 
         /// <summary>
         /// コンストラクタ
@@ -73,18 +75,33 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonCreateData_Click(object sender, EventArgs e)
         {
-            if (!this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text))
+            var dailyReportDataList = new List<DailyReportEntity>();
+            foreach (var row in DailyReportDataListForm.DataGridView1.Rows.Cast<DataGridViewRow>())
+            {
+                if (row.Cells[0].Value != null)
+                {
+                    var reportData = new DailyReportEntity();
+                    reportData.ControlNum = row.Cells[0].Value.ToString();
+                    reportData.DateStr = row.Cells[1].Value.ToString();
+                    reportData.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(row.Cells[2].Value.ToString());
+                    reportData.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(row.Cells[3].Value.ToString());
+                    reportData.Task = DailyReportEntity.ReplaceToUserNewLineStr(row.Cells[4].Value.ToString());
+                    dailyReportDataList.Add(reportData);
+                }
+            }
+
+            if (!this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text, dailyReportDataList))
             {
                 switch (CreateDataMode)
                 {
                     //新規追加
                     case CreateDataMode.APPEND:
-                        this.AppendDailyReportData();
+                        this.AppendDailyReportData(dailyReportDataList);
                         break;
 
                     //更新
                     case CreateDataMode.UPDATE:
-                        this.UpdateDailyReportData();
+                        this.UpdateDailyReportData(dailyReportDataList);
                         break;
 
                     default:
@@ -107,7 +124,9 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データ新規作成
         /// </summary>
-        private void AppendDailyReportData()
+        /// <remarks>データグリッドビューから日報データリスト取得</remarks>
+        /// <param name="sender">日報データリスト</param>
+        private void AppendDailyReportData(List<DailyReportEntity> dailyReportDataList)
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
             {
@@ -124,13 +143,10 @@ namespace AutoReportWinApp
                     dailyReport.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
                     dailyReport.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                     dailyReport.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
-                    DailyReportDataListForm.dailyReportDataMap.Add(DailyReportDataListForm.dailyReportDataMap.Count, dailyReport);
                     //日報データファイルに書き込み
-                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.dailyReportDataMap)
-                    {
-                        csv.WriteRecord(keyValuePair.Value);
-                        csv.NextRecord();
-                    }
+                    dailyReportDataList.Add(dailyReport);
+                    csv.Configuration.HasHeaderRecord = false;
+                    csv.WriteRecords(dailyReportDataList);
                     //日報データ作成後、管理番号を最新に更新
                     CreateDataControlNum++;
                 }
@@ -142,7 +158,7 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データ更新
         /// </summary>
-        private void UpdateDailyReportData()
+        private void UpdateDailyReportData(List<DailyReportEntity> dailyReportDataList)
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
             {
@@ -152,27 +168,27 @@ namespace AutoReportWinApp
                 using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in DailyReportDataListForm.dailyReportDataMap)
+                    foreach (var dailyReportData in dailyReportDataList)
                     {
-                        int controlNum = Int32.Parse(keyValuePair.Value.ControlNum);
+                        int controlNum = Int32.Parse(dailyReportData.ControlNum);
                         //更新する管理番号は日報データリストフォームで「CreateDataControlNum」プロパティーにセット
                         if (controlNum == CreateDataControlNum)
                         {
                             string[] writingData = { CreateDataControlNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
-
-                            for (var i = 0; i < writingData.Length; i++)
+                            var tarRowCells = DailyReportDataListForm.DataGridView1.Rows[UpdateDataGridViewRowIndex].Cells;
+                            for (var i = 0; i < tarRowCells.Count; i++)
                             {
-                                DailyReportDataListForm.DataGridView1.Rows[keyValuePair.Key].Cells[i].Value = writingData[i];
+                                tarRowCells[i].Value = writingData[i];
                             }
 
-                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].ControlNum = CreateDataControlNum.ToString();
-                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].DateStr = DailyReportEntity.ReplaceToUserNewLineStr(TextBox1Text);
-                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
-                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
-                            DailyReportDataListForm.dailyReportDataMap[keyValuePair.Key].Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
+                            dailyReportData.ControlNum = CreateDataControlNum.ToString();
+                            dailyReportData.DateStr = DailyReportEntity.ReplaceToUserNewLineStr(TextBox1Text);
+                            dailyReportData.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
+                            dailyReportData.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
+                            dailyReportData.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                         }
                         //日報データファイルに書き込み
-                        csv.WriteRecord(keyValuePair.Value);
+                        csv.WriteRecord(dailyReportData);
                         csv.NextRecord();
                     }
                 }
@@ -190,8 +206,9 @@ namespace AutoReportWinApp
         /// <param name="inputImplementationContent">「実施内容」項目入力値</param>
         /// <param name="inputTomorrowPlan">「翌日予定」項目入力値</param>
         /// <param name="inputTask">「課題」項目入力値</param>
+        /// <param name="dailyReportDataList">作成済み日報データ</param>
         /// <returns>判定結果</returns>
-        private Boolean Inputcheck(string inputDateStr, string inputImplementationContent, string inputTomorrowPlan, string inputTask)
+        private Boolean Inputcheck(string inputDateStr, string inputImplementationContent, string inputTomorrowPlan, string inputTask, List<DailyReportEntity> dailyReportDataList)
         {
             //日報作成時、入力項目取得
             var inputDateStrErrMsgEle = this.label1.Text.Substring(0, 2);
@@ -228,7 +245,7 @@ namespace AutoReportWinApp
                 errMsg.Append(Properties.Resources.E0001.Replace(replaceErrMsgFirstArgStr, partialErrMsg));
             }
 
-            if (!DuplicateCheck(inputDateStr, DailyReportDataListForm.dailyReportDataMap))
+            if (!DuplicateCheck(inputDateStr, dailyReportDataList))
             {
                 if (errMsg.Length > 0)
                 {
@@ -280,25 +297,22 @@ namespace AutoReportWinApp
         /// </summary>
         /// <remarks>「日付」で日報作成データ重複をチェック</remarks>
         /// <param name="dateStr">日付文字列</param>
-        /// <param name="dailyReportData">作成済み日報データ</param>
+        /// <param name="dailyReportDataList">作成済み日報データ</param>
         /// <returns>判定結果</returns>
-        private Boolean DuplicateCheck(string dateStr, Dictionary<int, DailyReportEntity> dailyReportData)
+        private Boolean DuplicateCheck(string dateStr, List<DailyReportEntity> dailyReportDataList)
         {
             Boolean rtnFlag = true;
 
-            if (dailyReportData.Count > 0)
+            foreach (DailyReportEntity dailyReportData in dailyReportDataList)
             {
-                foreach (KeyValuePair<int, DailyReportEntity> keyValuePair in dailyReportData)
+                if (Int32.Parse(dailyReportData.ControlNum) == CreateDataControlNum)
                 {
-                    if (Int32.Parse(keyValuePair.Value.ControlNum) == CreateDataControlNum)
-                    {
-                        continue;
-                    }
-                    if (dateStr.Equals(keyValuePair.Value.DateStr))
-                    {
-                        rtnFlag = false;
-                        break;
-                    }
+                    continue;
+                }
+                if (dateStr.Equals(dailyReportData.DateStr))
+                {
+                    rtnFlag = false;
+                    break;
                 }
             }
             return rtnFlag;
