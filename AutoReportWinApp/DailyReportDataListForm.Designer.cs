@@ -52,13 +52,13 @@
             this.buttonSecondFolderDialog = new System.Windows.Forms.Button();
             this.bindingNavigator1 = new System.Windows.Forms.BindingNavigator(this.components);
             this.bindingNavigatorCountItem = new System.Windows.Forms.ToolStripLabel();
-            this.bindingNavigatorMoveFirstItem = new System.Windows.Forms.ToolStripButton();
-            this.bindingNavigatorMovePreviousItem = new System.Windows.Forms.ToolStripButton();
+            this.buttonMoveFirstItem = new System.Windows.Forms.ToolStripButton();
+            this.buttonMovePreviousItemItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.bindingNavigatorPositionItem = new System.Windows.Forms.ToolStripTextBox();
             this.bindingNavigatorSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.bindingNavigatorMoveNextItem = new System.Windows.Forms.ToolStripButton();
-            this.bindingNavigatorMoveLastItem = new System.Windows.Forms.ToolStripButton();
+            this.buttonMoveNextItemItem = new System.Windows.Forms.ToolStripButton();
+            this.buttonMoveLastItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonAppendDailyReportData = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -271,21 +271,21 @@
             this.bindingNavigator1.CountItem = this.bindingNavigatorCountItem;
             this.bindingNavigator1.DeleteItem = null;
             this.bindingNavigator1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bindingNavigatorMoveFirstItem,
-            this.bindingNavigatorMovePreviousItem,
+            this.buttonMoveFirstItem,
+            this.buttonMovePreviousItemItem,
             this.bindingNavigatorSeparator,
             this.bindingNavigatorPositionItem,
             this.bindingNavigatorCountItem,
             this.bindingNavigatorSeparator1,
-            this.bindingNavigatorMoveNextItem,
-            this.bindingNavigatorMoveLastItem,
+            this.buttonMoveNextItemItem,
+            this.buttonMoveLastItem,
             this.bindingNavigatorSeparator2,
             this.buttonAppendDailyReportData});
             this.bindingNavigator1.Location = new System.Drawing.Point(0, 0);
-            this.bindingNavigator1.MoveFirstItem = this.bindingNavigatorMoveFirstItem;
-            this.bindingNavigator1.MoveLastItem = this.bindingNavigatorMoveLastItem;
-            this.bindingNavigator1.MoveNextItem = this.bindingNavigatorMoveNextItem;
-            this.bindingNavigator1.MovePreviousItem = this.bindingNavigatorMovePreviousItem;
+            this.bindingNavigator1.MoveFirstItem = null;
+            this.bindingNavigator1.MoveLastItem = null;
+            this.bindingNavigator1.MoveNextItem = null;
+            this.bindingNavigator1.MovePreviousItem = null;
             this.bindingNavigator1.Name = "bindingNavigator1";
             this.bindingNavigator1.PositionItem = this.bindingNavigatorPositionItem;
             this.bindingNavigator1.Size = new System.Drawing.Size(939, 25);
@@ -299,23 +299,24 @@
             this.bindingNavigatorCountItem.Text = "/ {0}";
             this.bindingNavigatorCountItem.ToolTipText = "項目の総数";
             // 
-            // bindingNavigatorMoveFirstItem
+            // buttonMoveFirstItem
             // 
-            this.bindingNavigatorMoveFirstItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bindingNavigatorMoveFirstItem.Image = ((System.Drawing.Image)(resources.GetObject("bindingNavigatorMoveFirstItem.Image")));
-            this.bindingNavigatorMoveFirstItem.Name = "bindingNavigatorMoveFirstItem";
-            this.bindingNavigatorMoveFirstItem.RightToLeftAutoMirrorImage = true;
-            this.bindingNavigatorMoveFirstItem.Size = new System.Drawing.Size(23, 22);
-            this.bindingNavigatorMoveFirstItem.Text = "最初に移動";
+            this.buttonMoveFirstItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonMoveFirstItem.Image = ((System.Drawing.Image)(resources.GetObject("buttonMoveFirstItem.Image")));
+            this.buttonMoveFirstItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonMoveFirstItem.Name = "buttonMoveFirstItem";
+            this.buttonMoveFirstItem.Size = new System.Drawing.Size(45, 22);
+            this.buttonMoveFirstItem.Text = "最初へ";
+            this.buttonMoveFirstItem.Click += new System.EventHandler(this.ButtonMoveFirstItem_Click);
             // 
-            // bindingNavigatorMovePreviousItem
+            // buttonMovePreviousItemItem
             // 
-            this.bindingNavigatorMovePreviousItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bindingNavigatorMovePreviousItem.Image = ((System.Drawing.Image)(resources.GetObject("bindingNavigatorMovePreviousItem.Image")));
-            this.bindingNavigatorMovePreviousItem.Name = "bindingNavigatorMovePreviousItem";
-            this.bindingNavigatorMovePreviousItem.RightToLeftAutoMirrorImage = true;
-            this.bindingNavigatorMovePreviousItem.Size = new System.Drawing.Size(23, 22);
-            this.bindingNavigatorMovePreviousItem.Text = "前に戻る";
+            this.buttonMovePreviousItemItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonMovePreviousItemItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonMovePreviousItemItem.Name = "buttonMovePreviousItemItem";
+            this.buttonMovePreviousItemItem.Size = new System.Drawing.Size(33, 22);
+            this.buttonMovePreviousItemItem.Text = "前へ";
+            this.buttonMovePreviousItemItem.Click += new System.EventHandler(this.ButtonMovePreviousItemItem_Click);
             // 
             // bindingNavigatorSeparator
             // 
@@ -326,7 +327,6 @@
             // 
             this.bindingNavigatorPositionItem.AccessibleName = "位置";
             this.bindingNavigatorPositionItem.AutoSize = false;
-            this.bindingNavigatorPositionItem.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
             this.bindingNavigatorPositionItem.Name = "bindingNavigatorPositionItem";
             this.bindingNavigatorPositionItem.Size = new System.Drawing.Size(50, 23);
             this.bindingNavigatorPositionItem.Text = "0";
@@ -337,23 +337,25 @@
             this.bindingNavigatorSeparator1.Name = "bindingNavigatorSeparator1";
             this.bindingNavigatorSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
-            // bindingNavigatorMoveNextItem
+            // buttonMoveNextItemItem
             // 
-            this.bindingNavigatorMoveNextItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bindingNavigatorMoveNextItem.Image = ((System.Drawing.Image)(resources.GetObject("bindingNavigatorMoveNextItem.Image")));
-            this.bindingNavigatorMoveNextItem.Name = "bindingNavigatorMoveNextItem";
-            this.bindingNavigatorMoveNextItem.RightToLeftAutoMirrorImage = true;
-            this.bindingNavigatorMoveNextItem.Size = new System.Drawing.Size(23, 22);
-            this.bindingNavigatorMoveNextItem.Text = "次に移動";
+            this.buttonMoveNextItemItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonMoveNextItemItem.Image = ((System.Drawing.Image)(resources.GetObject("buttonMoveNextItemItem.Image")));
+            this.buttonMoveNextItemItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonMoveNextItemItem.Name = "buttonMoveNextItemItem";
+            this.buttonMoveNextItemItem.Size = new System.Drawing.Size(33, 22);
+            this.buttonMoveNextItemItem.Text = "後へ";
+            this.buttonMoveNextItemItem.Click += new System.EventHandler(this.ButtonMoveNextItemItem_Click);
             // 
-            // bindingNavigatorMoveLastItem
+            // buttonMoveLastItem
             // 
-            this.bindingNavigatorMoveLastItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bindingNavigatorMoveLastItem.Image = ((System.Drawing.Image)(resources.GetObject("bindingNavigatorMoveLastItem.Image")));
-            this.bindingNavigatorMoveLastItem.Name = "bindingNavigatorMoveLastItem";
-            this.bindingNavigatorMoveLastItem.RightToLeftAutoMirrorImage = true;
-            this.bindingNavigatorMoveLastItem.Size = new System.Drawing.Size(23, 22);
-            this.bindingNavigatorMoveLastItem.Text = "最後に移動";
+            this.buttonMoveLastItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonMoveLastItem.Image = ((System.Drawing.Image)(resources.GetObject("buttonMoveLastItem.Image")));
+            this.buttonMoveLastItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonMoveLastItem.Name = "buttonMoveLastItem";
+            this.buttonMoveLastItem.Size = new System.Drawing.Size(45, 22);
+            this.buttonMoveLastItem.Text = "最後へ";
+            this.buttonMoveLastItem.Click += new System.EventHandler(this.ButtonMoveLastItem_Click);
             // 
             // bindingNavigatorSeparator2
             // 
@@ -428,14 +430,14 @@
         private System.Windows.Forms.Button buttonSecondFolderDialog;
         private System.Windows.Forms.BindingNavigator bindingNavigator1;
         private System.Windows.Forms.ToolStripLabel bindingNavigatorCountItem;
-        private System.Windows.Forms.ToolStripButton bindingNavigatorMoveFirstItem;
-        private System.Windows.Forms.ToolStripButton bindingNavigatorMovePreviousItem;
         private System.Windows.Forms.ToolStripSeparator bindingNavigatorSeparator;
         private System.Windows.Forms.ToolStripTextBox bindingNavigatorPositionItem;
         private System.Windows.Forms.ToolStripSeparator bindingNavigatorSeparator1;
-        private System.Windows.Forms.ToolStripButton bindingNavigatorMoveNextItem;
-        private System.Windows.Forms.ToolStripButton bindingNavigatorMoveLastItem;
         private System.Windows.Forms.ToolStripSeparator bindingNavigatorSeparator2;
         private System.Windows.Forms.ToolStripButton buttonAppendDailyReportData;
+        private System.Windows.Forms.ToolStripButton buttonMoveFirstItem;
+        private System.Windows.Forms.ToolStripButton buttonMovePreviousItemItem;
+        private System.Windows.Forms.ToolStripButton buttonMoveNextItemItem;
+        private System.Windows.Forms.ToolStripButton buttonMoveLastItem;
     }
 }

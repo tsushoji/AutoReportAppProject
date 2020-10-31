@@ -255,7 +255,14 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void DailyReportDataListForm_Load(object sender, EventArgs e)
         {
-            //データグリッドビューフォーカスをクリア
+            this.ClearDataGridViewFocus();
+        }
+
+        /// <summary>
+        /// データグリッドビューフォーカスをクリア
+        /// </summary>
+        private void ClearDataGridViewFocus()
+        {
             this.Activate();
             this.dataGridView1.CurrentCell = null;
             this.dataGridView1.RowHeadersVisible = false;
@@ -642,6 +649,63 @@ namespace AutoReportWinApp
             {
                 ChangeDataGridViewStyle(e, Color.Empty, Cursors.Default);
             }
+        }
+
+        /// <summary>
+        ///「先頭ページ移動」ボタン押下時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
+        private void ButtonMoveFirstItem_Click(object sender, EventArgs e)
+        {
+            CurrentDailyReportDataIndex = 0;
+            SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+            this.ClearDataGridViewFocus();
+        }
+
+        /// <summary>
+        ///「最終ページ移動」ボタン押下時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
+        private void ButtonMoveLastItem_Click(object sender, EventArgs e)
+        {
+            if (PageCount > 1)
+            {
+                CurrentDailyReportDataIndex = PageCount - 1;
+            }
+            SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+            this.ClearDataGridViewFocus();
+        }
+
+        /// <summary>
+        ///「次ページ移動」ボタン押下時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
+        private void ButtonMoveNextItemItem_Click(object sender, EventArgs e)
+        {
+            if (CurrentDailyReportDataIndex < PageCount - 1)
+            {
+                CurrentDailyReportDataIndex++;
+            }
+            SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+            this.ClearDataGridViewFocus();
+        }
+
+        /// <summary>
+        ///「前ページ移動」ボタン押下時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
+        private void ButtonMovePreviousItemItem_Click(object sender, EventArgs e)
+        {
+            if (CurrentDailyReportDataIndex > 0)
+            {
+                CurrentDailyReportDataIndex--;
+            }
+            SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+            this.ClearDataGridViewFocus();
         }
     }
 }
