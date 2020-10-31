@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Data;
 
 namespace AutoReportWinApp
 {
@@ -29,6 +30,9 @@ namespace AutoReportWinApp
     public partial class DailyReportDataListForm : Form
     {
         private string csvDailyReportDataPath;
+        private int currentDailyReportDataIndex;
+        internal List<DailyReportEntity> dailyReportDataList;
+        private int pageCount;
 
         private static string tmpWeeklyReportStr = "【日付】" + Environment.NewLine +
                                                 "{RepFstStr}" + Environment.NewLine +
@@ -52,9 +56,12 @@ namespace AutoReportWinApp
         private static readonly string repScdStr = "{RepScdStr}";
         private static readonly string repThdStr = "{RepThdStr}";
         private static readonly string repFthStr = "{RepFthStr}";
+        private static readonly int pageSize = 3;
 
         public string CsvDailyReportDataPath { get => csvDailyReportDataPath; set => csvDailyReportDataPath = value; }
         public DataGridView DataGridView1 { get => this.dataGridView1; set => this.dataGridView1 = value; }
+        public int CurrentDailyReportDataIndex { get => this.currentDailyReportDataIndex; set => this.currentDailyReportDataIndex = value; }
+        public int PageCount { get => this.pageCount; set => this.pageCount = value; }
         public static string WinCharCode { get => winCharCode; }
 
         /// <summary>
@@ -65,6 +72,7 @@ namespace AutoReportWinApp
         {
             InitializeComponent();
             CsvDailyReportDataPath = this.GetCsvDailyReportDataPath();
+            this.dailyReportDataList = new List<DailyReportEntity>();
             this.InitDailyReportDataReader(CsvDailyReportDataPath);
         }
 
@@ -98,11 +106,10 @@ namespace AutoReportWinApp
                     // ヘッダーの有無
                     csv.Configuration.HasHeaderRecord = false;
                     // データ読み出し（IEnumerable<Item>として受け取る）
-                    var dailyReports = csv.GetRecords<DailyReportEntity>();
-                    foreach (DailyReportEntity dailyReport in dailyReports)
-                    {
-                        DataGridView1.Rows.Add(dailyReport.ControlNum, dailyReport.DateStr, DailyReportEntity.ReplaceToNewLineStr(dailyReport.ImplementationContent), DailyReportEntity.ReplaceToNewLineStr(dailyReport.TomorrowPlan), DailyReportEntity.ReplaceToNewLineStr(dailyReport.Task));
-                    }
+                    //var dailyReports = csv.GetRecords<DailyReportEntity>();
+                    this.dailyReportDataList = csv.GetRecords<DailyReportEntity>().ToList();
+                    CurrentDailyReportDataIndex = 0;
+                    SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
                 }
             }
             //日報データがない場合
@@ -114,6 +121,62 @@ namespace AutoReportWinApp
                     Directory.CreateDirectory(createDataDirectoryPath);
                 }
                 File.Create(csvDailyReportDataPath).Close();
+            }
+        }
+
+        /// <summary>
+        /// ページングしたデータをデータグリッドビューセット
+        /// </summary>
+        /// <param name="dailyReports">日報データリスト</param>
+        internal void SetPagingDailyReportDataToDataGridView(List<DailyReportEntity> dailyReports)
+        {
+            var dailyReportList = new List<List<DailyReportEntity>>();
+            int counter = 0;
+            var dailyReportsByPageSize = new List<DailyReportEntity>();
+            this.SetPageCountProperty(dailyReports);
+            foreach (DailyReportEntity dailyReport in dailyReports)
+            {
+                dailyReportsByPageSize.Add(dailyReport);
+                counter++;
+                if (counter % pageSize == 0)
+                {
+                    dailyReportList.Add(dailyReportsByPageSize);
+                    dailyReportsByPageSize = null;
+                    dailyReportsByPageSize = new List<DailyReportEntity>();
+                }
+                if (counter % pageSize != 0 & counter == dailyReports.Count)
+                {
+                    dailyReportList.Add(dailyReportsByPageSize);
+                }
+            }
+            if (dailyReportList.Count > 0)
+            {
+                DataGridView1.Rows.Clear();
+                foreach (DailyReportEntity dailyReport in dailyReportList.ToArray()[CurrentDailyReportDataIndex])
+                {
+                    DataGridView1.Rows.Add(dailyReport.ControlNum, dailyReport.DateStr, DailyReportEntity.ReplaceToNewLineStr(dailyReport.ImplementationContent), DailyReportEntity.ReplaceToNewLineStr(dailyReport.TomorrowPlan), DailyReportEntity.ReplaceToNewLineStr(dailyReport.Task));
+                }
+            }
+            this.bindingNavigatorCountItem.Text = InputDailyReportForm.SlashChar.ToString() + this.pageCount.ToString();
+            this.bindingNavigatorPositionItem.Text = (CurrentDailyReportDataIndex + 1).ToString();
+        }
+
+        /// <summary>
+        /// ページカウントプロパティーをセット
+        /// </summary>
+        /// <param name="dailyReports">日報データリスト</param>
+        internal void SetPageCountProperty(List<DailyReportEntity> dailyReports)
+        {
+            int dailyReportsCount = dailyReports.Count;
+            PageCount = 1;
+            if (dailyReportsCount > 0)
+            {
+                PageCount = dailyReportsCount / pageSize;
+                int calculateSurplus = dailyReportsCount % pageSize;
+                if (calculateSurplus != 0)
+                {
+                    PageCount++;
+                }
             }
         }
 
@@ -130,34 +193,41 @@ namespace AutoReportWinApp
                 using (var inputDailyReportForm = new InputDailyReportForm())
                 {
                     inputDailyReportForm.DailyReportDataListForm = this;
-                    inputDailyReportForm.CreateDataMode = CreateDataMode.APPEND;
-                    //日報データが1件以上ある場合
-                    if (DataGridView1.Rows.Count > 1)
-                    {
-                        //日報データ作成管理番号をプロパティにセット
-                        inputDailyReportForm.CreateDataControlNum = this.GetMaxDataGridControlNum(DataGridView1) + 1;
-                    }
-                    //日報データがない場合
-                    else
-                    {
-                        //日報データ作成管理番号をプロパティにセット
-                        inputDailyReportForm.CreateDataControlNum = createReportDataFirstColNum;
-                    }
-
-                    //日報データを更新する場合
-                    if (e.RowIndex != DataGridView1.Rows.Count - 1)
-                    {
-                        inputDailyReportForm.CreateDataMode = CreateDataMode.UPDATE;
-                        inputDailyReportForm.UpdateDataGridViewRowIndex = e.RowIndex;
-                        inputDailyReportForm.CreateDataControlNum = Int32.Parse(DataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString());
-                        inputDailyReportForm.TextBox1Text = DataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
-                        inputDailyReportForm.TextBox2Text = DataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
-                        inputDailyReportForm.TextBox3Text = DataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString();
-                        inputDailyReportForm.TextBox4Text = DataGridView1.Rows[e.RowIndex].Cells[4].Value.ToString();
-                    }
-
+                    inputDailyReportForm.CreateDataMode = CreateDataMode.UPDATE;
+                    inputDailyReportForm.CreateDataControlNum = Int32.Parse(DataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString());
+                    inputDailyReportForm.TextBox1Text = DataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
+                    inputDailyReportForm.TextBox2Text = DataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
+                    inputDailyReportForm.TextBox3Text = DataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString();
+                    inputDailyReportForm.TextBox4Text = DataGridView1.Rows[e.RowIndex].Cells[4].Value.ToString();
                     inputDailyReportForm.ShowDialog();
                 }
+            }
+        }
+
+        /// <summary>
+        ///「日報データ新規追加」ボタン押下時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
+        private void ButtonAppendDailyReportData_Click(object sender, EventArgs e)
+        {
+            using (var inputDailyReportForm = new InputDailyReportForm())
+            {
+                inputDailyReportForm.DailyReportDataListForm = this;
+                inputDailyReportForm.CreateDataMode = CreateDataMode.APPEND;
+                //日報データが1件以上ある場合
+                if (this.dailyReportDataList.Count > 0)
+                {
+                    //日報データ作成管理番号をプロパティにセット
+                    inputDailyReportForm.CreateDataControlNum = this.GetMaxControlNum(this.dailyReportDataList) + 1;
+                }
+                //日報データがない場合
+                else
+                {
+                    //日報データ作成管理番号をプロパティにセット
+                    inputDailyReportForm.CreateDataControlNum = createReportDataFirstColNum;
+                }
+                inputDailyReportForm.ShowDialog();
             }
         }
 
@@ -165,19 +235,16 @@ namespace AutoReportWinApp
         /// 日報データリストの最大管理番号取得
         /// </summary>
         /// <remarks>日報データ新規作成時、必要</remarks>
-        /// <param name="dataGridView">データグリッドビューオブジェクト</param>
+        /// <param name="dailyReports">日報データリスト</param>
         /// <returns>最大管理番号</returns>
-        private int GetMaxDataGridControlNum(DataGridView dataGridView)
+        private int GetMaxControlNum(List<DailyReportEntity> dailyReports)
         {
-            var dataGridViewControlNumList = new List<int>();
-            foreach (var row in DataGridView1.Rows.Cast<DataGridViewRow>())
+            var controlNumList = new List<int>();
+            foreach (var dailyReport in dailyReports)
             {
-                if (row.Cells[0].Value != null)
-                {
-                    dataGridViewControlNumList.Add(Int32.Parse(row.Cells[0].Value.ToString()));
-                }
+                controlNumList.Add(Int32.Parse(dailyReport.ControlNum));
             }
-            return dataGridViewControlNumList.Max();
+            return controlNumList.Max();
         }
 
         /// <summary>
@@ -377,16 +444,16 @@ namespace AutoReportWinApp
             {
                 string[] controlNumArray = this.textBox3.Text.Split(delimiter);
                 var outputWeeklyReportDataList = new List<DailyReportEntity>();
-                foreach (var row in DataGridView1.Rows.Cast<DataGridViewRow>())
+                foreach (var dailyReportData in this.dailyReportDataList)
                 {
-                    if (row.Cells[0].Value != null && controlNumArray.Contains(row.Cells[0].Value.ToString()))
+                    if (controlNumArray.Contains(dailyReportData.ControlNum))
                     {
                         var reportData = new DailyReportEntity();
-                        reportData.ControlNum = row.Cells[0].Value.ToString();
-                        reportData.DateStr = row.Cells[1].Value.ToString();
-                        reportData.ImplementationContent = row.Cells[2].Value.ToString();
-                        reportData.TomorrowPlan = row.Cells[3].Value.ToString();
-                        reportData.Task = row.Cells[4].Value.ToString();
+                        reportData.ControlNum = dailyReportData.ControlNum;
+                        reportData.DateStr = dailyReportData.DateStr;
+                        reportData.ImplementationContent = dailyReportData.ImplementationContent;
+                        reportData.TomorrowPlan = dailyReportData.Task;
+                        reportData.Task = dailyReportData.TomorrowPlan;
                         outputWeeklyReportDataList.Add(reportData);
                     }
                 }
@@ -484,7 +551,7 @@ namespace AutoReportWinApp
                     errMsg.Append(Properties.Resources.E0005);
                 }
 
-                if (!ContainDataGridViewDataCheck(this.textBox3.Text.Split(delimiter)))
+                if (!ContainDailyReportDataDataCheck(this.textBox3.Text.Split(delimiter)))
                 {
                     if (errMsg.Length > 0)
                     {
@@ -528,19 +595,16 @@ namespace AutoReportWinApp
         /// <remarks>選択された対象管理番号がデータリストに存在しているかチェック</remarks>
         /// <param name="array">配列</param>
         /// <returns>判定結果</returns>
-        private Boolean ContainDataGridViewDataCheck(string[] array)
+        private Boolean ContainDailyReportDataDataCheck(string[] array)
         {
-            var dataGridViewControlNumList = new List<String>();
-            foreach (var row in DataGridView1.Rows.Cast<DataGridViewRow>())
+            var dataControlNumList = new List<String>();
+            foreach (var dailyReportData in this.dailyReportDataList)
             {
-                if (row.Cells[0].Value != null)
-                {
-                    dataGridViewControlNumList.Add(row.Cells[0].Value.ToString());
-                }
+                dataControlNumList.Add(dailyReportData.ControlNum);
             }
             foreach (var element in array)
             {
-                if (dataGridViewControlNumList.Contains(element))
+                if (dataControlNumList.Contains(element))
                 {
                     continue;
                 }
@@ -552,6 +616,7 @@ namespace AutoReportWinApp
             return true;
         }
 
+        /// <summary>
         /// データグリッドビューマウスポインターがセルに入ったときのイベント
         /// </summary>
         /// <remarks>データグリッドビューの「日付」、「実施内容」、「翌日予定」、「課題」項目データのセルにマウスポインターが入ったとき、データグリッドビューのスタイルを変更</remarks>

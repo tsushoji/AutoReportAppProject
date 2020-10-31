@@ -29,7 +29,6 @@ namespace AutoReportWinApp
         private DailyReportDataListForm dailyReportDataListForm;
         private CreateDataMode createDataMode;
         private int createDataControlNum;
-        private int updateDataGridViewRowIndex;
 
         private static readonly char slashChar = '/';
         private static readonly string readingPointStr = "、";
@@ -44,7 +43,7 @@ namespace AutoReportWinApp
         public string TextBox4Text { get => this.textBox4.Text; set => this.textBox4.Text = value; }
         public static string ReadingPointStr { get => readingPointStr; }
         public static string ReplaceErrMsgFirstArgStr { get => replaceErrMsgFirstArgStr; }
-        public int UpdateDataGridViewRowIndex { get => this.updateDataGridViewRowIndex; set => this.updateDataGridViewRowIndex = value; }
+        public static char SlashChar { get => slashChar; }
 
         /// <summary>
         /// コンストラクタ
@@ -73,35 +72,20 @@ namespace AutoReportWinApp
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
-        private void ButtonCreateData_Click(object sender, EventArgs e)
+        private void ButtonCreate_Click(object sender, EventArgs e)
         {
-            var dailyReportDataList = new List<DailyReportEntity>();
-            foreach (var row in DailyReportDataListForm.DataGridView1.Rows.Cast<DataGridViewRow>())
-            {
-                if (row.Cells[0].Value != null)
-                {
-                    var reportData = new DailyReportEntity();
-                    reportData.ControlNum = row.Cells[0].Value.ToString();
-                    reportData.DateStr = row.Cells[1].Value.ToString();
-                    reportData.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(row.Cells[2].Value.ToString());
-                    reportData.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(row.Cells[3].Value.ToString());
-                    reportData.Task = DailyReportEntity.ReplaceToUserNewLineStr(row.Cells[4].Value.ToString());
-                    dailyReportDataList.Add(reportData);
-                }
-            }
-
-            if (!this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text, dailyReportDataList))
+            if (!this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text, DailyReportDataListForm.dailyReportDataList))
             {
                 switch (CreateDataMode)
                 {
                     //新規追加
                     case CreateDataMode.APPEND:
-                        this.AppendDailyReportData(dailyReportDataList);
+                        this.AppendDailyReportData();
                         break;
 
                     //更新
                     case CreateDataMode.UPDATE:
-                        this.UpdateDailyReportData(dailyReportDataList);
+                        this.UpdateDailyReportData();
                         break;
 
                     default:
@@ -116,7 +100,7 @@ namespace AutoReportWinApp
         /// <remarks>「日報データリストフォーム」へ遷移</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
-        private void ButtonToDailyReportDataListForm_Click(object sender, EventArgs e)
+        private void ButtonForDataList_Click(object sender, EventArgs e)
         {
             this.Close();
         }
@@ -124,9 +108,7 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データ新規作成
         /// </summary>
-        /// <remarks>データグリッドビューから日報データリスト取得</remarks>
-        /// <param name="sender">日報データリスト</param>
-        private void AppendDailyReportData(List<DailyReportEntity> dailyReportDataList)
+        private void AppendDailyReportData()
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
             {
@@ -136,17 +118,21 @@ namespace AutoReportWinApp
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
                     var dailyReport = new DailyReportEntity();
-                    //データグリッドビューに日報データ新規追加
-                    DailyReportDataListForm.DataGridView1.Rows.Add(CreateDataControlNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text);
                     dailyReport.ControlNum = CreateDataControlNum.ToString();
                     dailyReport.DateStr = TextBox1Text;
                     dailyReport.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
                     dailyReport.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                     dailyReport.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
-                    //日報データファイルに書き込み
-                    dailyReportDataList.Add(dailyReport);
+                    DailyReportDataListForm.dailyReportDataList.Add(dailyReport);
                     csv.Configuration.HasHeaderRecord = false;
-                    csv.WriteRecords(dailyReportDataList);
+                    csv.WriteRecords(DailyReportDataListForm.dailyReportDataList);
+                    //データグリッドビューに日報データ新規追加
+                    DailyReportDataListForm.SetPageCountProperty(DailyReportDataListForm.dailyReportDataList);
+                    if (DailyReportDataListForm.PageCount > 1)
+                    {
+                        DailyReportDataListForm.CurrentDailyReportDataIndex = DailyReportDataListForm.PageCount - 1;
+                    }
+                    DailyReportDataListForm.SetPagingDailyReportDataToDataGridView(DailyReportDataListForm.dailyReportDataList);
                     //日報データ作成後、管理番号を最新に更新
                     CreateDataControlNum++;
                 }
@@ -158,7 +144,7 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データ更新
         /// </summary>
-        private void UpdateDailyReportData(List<DailyReportEntity> dailyReportDataList)
+        private void UpdateDailyReportData()
         {
             if (File.Exists(DailyReportDataListForm.CsvDailyReportDataPath))
             {
@@ -168,19 +154,12 @@ namespace AutoReportWinApp
                 using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    foreach (var dailyReportData in dailyReportDataList)
+                    foreach (var dailyReportData in DailyReportDataListForm.dailyReportDataList)
                     {
                         int controlNum = Int32.Parse(dailyReportData.ControlNum);
                         //更新する管理番号は日報データリストフォームで「CreateDataControlNum」プロパティーにセット
                         if (controlNum == CreateDataControlNum)
                         {
-                            string[] writingData = { CreateDataControlNum.ToString(), TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text };
-                            var tarRowCells = DailyReportDataListForm.DataGridView1.Rows[UpdateDataGridViewRowIndex].Cells;
-                            for (var i = 0; i < tarRowCells.Count; i++)
-                            {
-                                tarRowCells[i].Value = writingData[i];
-                            }
-
                             dailyReportData.ControlNum = CreateDataControlNum.ToString();
                             dailyReportData.DateStr = DailyReportEntity.ReplaceToUserNewLineStr(TextBox1Text);
                             dailyReportData.ImplementationContent = DailyReportEntity.ReplaceToUserNewLineStr(TextBox2Text);
@@ -191,8 +170,9 @@ namespace AutoReportWinApp
                         csv.WriteRecord(dailyReportData);
                         csv.NextRecord();
                     }
+                    //データグリッドビューに日報データ更新
+                    DailyReportDataListForm.SetPagingDailyReportDataToDataGridView(DailyReportDataListForm.dailyReportDataList);
                 }
-
                 MessageBox.Show(Properties.Resources.I0002);
                 this.Close();
             }
