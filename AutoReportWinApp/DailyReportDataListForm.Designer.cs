@@ -327,6 +327,7 @@
             // 
             this.bindingNavigatorPositionItem.AccessibleName = "位置";
             this.bindingNavigatorPositionItem.AutoSize = false;
+            this.bindingNavigatorPositionItem.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
             this.bindingNavigatorPositionItem.Name = "bindingNavigatorPositionItem";
             this.bindingNavigatorPositionItem.Size = new System.Drawing.Size(50, 23);
             this.bindingNavigatorPositionItem.Text = "0";
@@ -344,7 +345,7 @@
             this.buttonMoveNextItemItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonMoveNextItemItem.Name = "buttonMoveNextItemItem";
             this.buttonMoveNextItemItem.Size = new System.Drawing.Size(33, 22);
-            this.buttonMoveNextItemItem.Text = "後へ";
+            this.buttonMoveNextItemItem.Text = "次へ";
             this.buttonMoveNextItemItem.Click += new System.EventHandler(this.ButtonMoveNextItemItem_Click);
             // 
             // buttonMoveLastItem

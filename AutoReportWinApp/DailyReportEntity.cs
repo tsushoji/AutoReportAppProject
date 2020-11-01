@@ -7,11 +7,9 @@ namespace AutoReportWinApp
     /// <summary>
     /// 日報データエンティティクラス
     /// </summary>
-    /// <remarks>日報データ用クラス</remarks>
+    /// <remarks>日報データクラス</remarks>
     class DailyReportEntity
     {
-        //csvファイルを読み込み、日報データを表示している
-        //以下csvファイル用の改行文字列とする
         private static readonly string userNewLineStr = "@NewLine";
         private static readonly string newLineStr = "\r\n";
 
@@ -35,7 +33,7 @@ namespace AutoReportWinApp
         /// <returns>置換後文字列</returns>
         public static string ReplaceToNewLineStr(string strWithUserNewLine)
         {
-            string rtnStr = strWithUserNewLine;
+            var rtnStr = strWithUserNewLine;
             if (rtnStr.Contains(userNewLineStr))
             {
                 rtnStr = rtnStr.Replace(userNewLineStr, NewLineStr);
@@ -50,7 +48,7 @@ namespace AutoReportWinApp
         /// <returns>置換後文字列</returns>
         public static string ReplaceToUserNewLineStr(string strWithNewLine)
         {
-            string rtnStr = strWithNewLine;
+            var rtnStr = strWithNewLine;
             if (rtnStr.Contains(NewLineStr))
             {
                 rtnStr = rtnStr.Replace(NewLineStr, userNewLineStr);

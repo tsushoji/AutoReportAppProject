@@ -29,9 +29,9 @@ namespace AutoReportWinApp
     /// <remarks>作成した日報データを表示するフォーム</remarks>
     public partial class DailyReportDataListForm : Form
     {
+        internal List<DailyReportEntity> dailyReportDataList;
         private string csvDailyReportDataPath;
         private int currentDailyReportDataIndex;
-        internal List<DailyReportEntity> dailyReportDataList;
         private int pageCount;
 
         private static string tmpWeeklyReportStr = "【日付】" + Environment.NewLine +
@@ -56,13 +56,19 @@ namespace AutoReportWinApp
         private static readonly string repScdStr = "{RepScdStr}";
         private static readonly string repThdStr = "{RepThdStr}";
         private static readonly string repFthStr = "{RepFthStr}";
-        private static readonly int pageSize = 3;
+        private static readonly int pageSize = 20;
+        private static readonly char slashChar = '/';
+        private static readonly string replaceErrMsgFirstArgStr = "{FIRSTARG}";
+        private static readonly string readingPointStr = "、";
 
         public string CsvDailyReportDataPath { get => csvDailyReportDataPath; set => csvDailyReportDataPath = value; }
         public DataGridView DataGridView1 { get => this.dataGridView1; set => this.dataGridView1 = value; }
         public int CurrentDailyReportDataIndex { get => this.currentDailyReportDataIndex; set => this.currentDailyReportDataIndex = value; }
         public int PageCount { get => this.pageCount; set => this.pageCount = value; }
         public static string WinCharCode { get => winCharCode; }
+        public static char SlashChar { get => slashChar; }
+        public static string ReplaceErrMsgFirstArgStr { get => replaceErrMsgFirstArgStr; }
+        public static string ReadingPointStr { get => readingPointStr; }
 
         /// <summary>
         /// コンストラクタ
@@ -93,10 +99,9 @@ namespace AutoReportWinApp
         /// 日報データリストフォームクラスの初期処理
         /// </summary>
         /// <remarks>日報データcsvファイルを作成または読み込み、日報データリストフォームに表示</remarks>
-        /// <param name="createDataFilePath">日報データcsvファイルパス</param>
+        /// <param name="csvDailyReportDataPath">日報データcsvファイルパス</param>
         private void InitDailyReportDataReader(string csvDailyReportDataPath)
         {
-            //日報データが既にある場合
             if (File.Exists(csvDailyReportDataPath))
             {
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -106,13 +111,11 @@ namespace AutoReportWinApp
                     // ヘッダーの有無
                     csv.Configuration.HasHeaderRecord = false;
                     // データ読み出し（IEnumerable<Item>として受け取る）
-                    //var dailyReports = csv.GetRecords<DailyReportEntity>();
                     this.dailyReportDataList = csv.GetRecords<DailyReportEntity>().ToList();
                     CurrentDailyReportDataIndex = 0;
                     SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
                 }
             }
-            //日報データがない場合
             else
             {
                 string createDataDirectoryPath = System.IO.Path.GetDirectoryName(csvDailyReportDataPath);
@@ -125,13 +128,13 @@ namespace AutoReportWinApp
         }
 
         /// <summary>
-        /// ページングしたデータをデータグリッドビューセット
+        /// ページングした日報データをデータグリッドビューにセット
         /// </summary>
         /// <param name="dailyReports">日報データリスト</param>
         internal void SetPagingDailyReportDataToDataGridView(List<DailyReportEntity> dailyReports)
         {
             var dailyReportList = new List<List<DailyReportEntity>>();
-            int counter = 0;
+            var counter = 0;
             var dailyReportsByPageSize = new List<DailyReportEntity>();
             this.SetPageCountProperty(dailyReports);
             foreach (DailyReportEntity dailyReport in dailyReports)
@@ -157,7 +160,7 @@ namespace AutoReportWinApp
                     DataGridView1.Rows.Add(dailyReport.ControlNum, dailyReport.DateStr, DailyReportEntity.ReplaceToNewLineStr(dailyReport.ImplementationContent), DailyReportEntity.ReplaceToNewLineStr(dailyReport.TomorrowPlan), DailyReportEntity.ReplaceToNewLineStr(dailyReport.Task));
                 }
             }
-            this.bindingNavigatorCountItem.Text = InputDailyReportForm.SlashChar.ToString() + this.pageCount.ToString();
+            this.bindingNavigatorCountItem.Text = SlashChar.ToString() + this.pageCount.ToString();
             this.bindingNavigatorPositionItem.Text = (CurrentDailyReportDataIndex + 1).ToString();
         }
 
@@ -167,7 +170,7 @@ namespace AutoReportWinApp
         /// <param name="dailyReports">日報データリスト</param>
         internal void SetPageCountProperty(List<DailyReportEntity> dailyReports)
         {
-            int dailyReportsCount = dailyReports.Count;
+            var dailyReportsCount = dailyReports.Count;
             PageCount = 1;
             if (dailyReportsCount > 0)
             {
@@ -183,7 +186,7 @@ namespace AutoReportWinApp
         /// <summary>
         /// データグリッドビューダブルクリック時、イベント
         /// </summary>
-        /// <remarks>更新した日報データをダブルクリック時、イベント</remarks>
+        /// <remarks>ダブルクリックした日報データを更新</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
         private void ClickCreateData_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -215,16 +218,12 @@ namespace AutoReportWinApp
             {
                 inputDailyReportForm.DailyReportDataListForm = this;
                 inputDailyReportForm.CreateDataMode = CreateDataMode.APPEND;
-                //日報データが1件以上ある場合
                 if (this.dailyReportDataList.Count > 0)
                 {
-                    //日報データ作成管理番号をプロパティにセット
                     inputDailyReportForm.CreateDataControlNum = this.GetMaxControlNum(this.dailyReportDataList) + 1;
                 }
-                //日報データがない場合
                 else
                 {
-                    //日報データ作成管理番号をプロパティにセット
                     inputDailyReportForm.CreateDataControlNum = createReportDataFirstColNum;
                 }
                 inputDailyReportForm.ShowDialog();
@@ -250,7 +249,6 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データリストクラス読み込み時、イベント
         /// </summary>
-        /// <remarks>クラス読み込み時、データグリッドビューフォーカスをクリア</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
         private void DailyReportDataListForm_Load(object sender, EventArgs e)
@@ -286,7 +284,6 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データ出力項目「フォルダダイアログ」ボタンクリック時、イベント
         /// </summary>
-        /// <remarks>日報データ出力項目「テキストボックス」にフォルダパスをセット</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonFirstFolderDialog_Click(object sender, EventArgs e)
@@ -297,7 +294,6 @@ namespace AutoReportWinApp
         /// <summary>
         /// 週報出力項目「フォルダダイアログ」ボタンクリック時、イベント
         /// </summary>
-        /// <remarks>週報出力項目「テキストボックス」にフォルダパスをセット</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonSecondFolderDialog_Click(object sender, EventArgs e)
@@ -321,8 +317,7 @@ namespace AutoReportWinApp
                 DialogResult result = dialog.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                    string selectedPath = dialog.SelectedPath;
-                    textBox.Text = selectedPath;
+                    textBox.Text = dialog.SelectedPath;
                 }
             }
         }
@@ -330,7 +325,6 @@ namespace AutoReportWinApp
         /// <summary>
         /// 「出力」ボタン押下時、イベント
         /// </summary>
-        /// <remarks>日報データ出力項目「出力」ボタン押下時、イベント</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonOutputDailyReportData_Click(object sender, EventArgs e)
@@ -341,7 +335,6 @@ namespace AutoReportWinApp
         /// <summary>
         /// 「週報出力」ボタン押下時、イベント
         /// </summary>
-        /// <remarks>週報出力項目「週報出力」ボタン押下時、イベント</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonOutputWeeklyReport_Click(object sender, EventArgs e)
@@ -352,7 +345,7 @@ namespace AutoReportWinApp
         /// <summary>
         /// 日報データまたは週報を出力
         /// </summary>
-        /// <remarks>テキストボックスにセットしたフォルダパスに日報データ（csvファイル）または週報（テキストファイル）を出力</remarks>
+        /// <remarks>テキストボックスにセットしたフォルダパスに日報データ（csvファイル）または週報（テキストファイル）を出力する共通メソッド</remarks>
         /// <param name="outputType">出力タイプ</param>
         private void OutputReportFile(OutputType outputType)
         {
@@ -360,12 +353,10 @@ namespace AutoReportWinApp
             {
                 switch (outputType)
                 {
-                    //日報データ
                     case OutputType.DAILY_REPORT_DATA:
                         this.OutputDailyReportData();
                         break;
 
-                    //週報
                     case OutputType.WEEKLY_REPORT:
                         if (!this.ValidateWeeklyReport())
                         {
@@ -388,15 +379,12 @@ namespace AutoReportWinApp
             if (!System.IO.Directory.Exists(this.textBox1.Text))
             {
                 MessageBox.Show(Properties.Resources.E0004);
-                //「出力フォルダパス」リセット
                 this.textBox2.ResetText();
                 return;
             }
-
-            Boolean appendFlg = false;
-            var outputPath = this.textBox1.Text + dailyReportCsvFileNameWithExt;
+            var appendFlg = false;
+            string outputPath = this.textBox1.Text + dailyReportCsvFileNameWithExt;
             string outputDailyReportDataCompMsg = Properties.Resources.I0003;
-            //出力ファイルパスが同名の場合
             if (File.Exists(outputPath))
             {
                 outputDailyReportDataCompMsg = Properties.Resources.I0004;
@@ -416,17 +404,13 @@ namespace AutoReportWinApp
             if (!System.IO.Directory.Exists(this.textBox2.Text))
             {
                 MessageBox.Show(Properties.Resources.E0004);
-                //「出力フォルダパス」リセット
                 this.textBox2.ResetText();
                 return;
             }
-
             //上書きする
-            Boolean appendFlg = false;
+            var appendFlg = false;
             string outputPath = this.textBox2.Text + weeklyReportTxtFileNameWithExt;
-
             string outputWeeklyReportCompMsg = Properties.Resources.I0007;
-            //出力ファイルパスが同名の場合
             if (File.Exists(outputPath))
             {
                 DialogResult dialogResult = MessageBox.Show(Properties.Resources.W0001, dialogBoxCaption, MessageBoxButtons.YesNo);
@@ -464,7 +448,6 @@ namespace AutoReportWinApp
                         outputWeeklyReportDataList.Add(reportData);
                     }
                 }
-
                 //日付で昇順に並べる
                 outputWeeklyReportDataList = outputWeeklyReportDataList.OrderBy(value => DateTime.Parse(value.DateStr)).ToList();
                 //週報文字列生成
@@ -493,39 +476,33 @@ namespace AutoReportWinApp
         {
             var errMsgEleList = new List<string>();
             var errMsg = new StringBuilder();
-
-            //日報データ
             if (outputType == OutputType.DAILY_REPORT_DATA)
             {
                 if (string.IsNullOrEmpty(this.textBox1.Text))
                 {
-                    var outputDailyReportDataFolderPathStrErrMsgEle = this.label1.Text + this.label2.Text.Substring(0, 8);
+                    string outputDailyReportDataFolderPathStrErrMsgEle = this.label1.Text + this.label2.Text.Substring(0, 8);
                     errMsgEleList.Add(outputDailyReportDataFolderPathStrErrMsgEle);
                 }
             }
-
-            //週報出力
             if (outputType == OutputType.WEEKLY_REPORT)
             {
                 if (string.IsNullOrEmpty(this.textBox2.Text))
                 {
-                    var outputWeeklyReportFolderPathStrErrMsgEle = this.label4.Text + this.label3.Text.Substring(0, 8);
+                    string outputWeeklyReportFolderPathStrErrMsgEle = this.label4.Text + this.label3.Text.Substring(0, 8);
                     errMsgEleList.Add(outputWeeklyReportFolderPathStrErrMsgEle);
                 }
 
                 if (string.IsNullOrEmpty(this.textBox3.Text))
                 {
-                    var tarMngNumStrErrMsgEle = this.label4.Text + this.label5.Text.Substring(0, 6);
+                    string tarMngNumStrErrMsgEle = this.label4.Text + this.label5.Text.Substring(0, 6);
                     errMsgEleList.Add(tarMngNumStrErrMsgEle);
                 }
             }
-
             if (errMsgEleList.Count > 0)
             {
-                string partialErrMsg = errMsgEleList.Aggregate((i, j) => i + InputDailyReportForm.ReadingPointStr + j);
-                errMsg.Append(Properties.Resources.E0001.Replace(InputDailyReportForm.ReplaceErrMsgFirstArgStr, partialErrMsg));
+                string partialErrMsg = errMsgEleList.Aggregate((i, j) => i + ReadingPointStr + j);
+                errMsg.Append(Properties.Resources.E0001.Replace(ReplaceErrMsgFirstArgStr, partialErrMsg));
             }
-
             if (errMsg.Length > 0)
             {
                 MessageBox.Show(errMsg.ToString());
@@ -597,7 +574,7 @@ namespace AutoReportWinApp
         }
 
         /// <summary>
-        /// データリスト存在チェック
+        /// 配列要素存在チェック
         /// </summary>
         /// <remarks>選択された対象管理番号がデータリストに存在しているかチェック</remarks>
         /// <param name="array">配列</param>
@@ -626,7 +603,6 @@ namespace AutoReportWinApp
         /// <summary>
         /// データグリッドビューマウスポインターがセルに入ったときのイベント
         /// </summary>
-        /// <remarks>データグリッドビューの「日付」、「実施内容」、「翌日予定」、「課題」項目データのセルにマウスポインターが入ったとき、データグリッドビューのスタイルを変更</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
         private void DailyReportDataListFormDataGridView_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
@@ -640,7 +616,6 @@ namespace AutoReportWinApp
         /// <summary>
         /// データグリッドビューマウスポインターがセルから離れるときのイベント
         /// </summary>
-        /// <remarks>データグリッドビューの「日付」、「実施内容」、「翌日予定」、「課題」項目データのセルにマウスポインターが入ったとき、データグリッドビューのスタイルを変更</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
         private void DailyReportDataListFormDataGridView_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
@@ -652,7 +627,7 @@ namespace AutoReportWinApp
         }
 
         /// <summary>
-        ///「先頭ページ移動」ボタン押下時、イベント
+        ///「最初へ」ボタン押下時、イベント
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
@@ -664,7 +639,7 @@ namespace AutoReportWinApp
         }
 
         /// <summary>
-        ///「最終ページ移動」ボタン押下時、イベント
+        ///「最後へ」ボタン押下時、イベント
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
@@ -679,7 +654,7 @@ namespace AutoReportWinApp
         }
 
         /// <summary>
-        ///「次ページ移動」ボタン押下時、イベント
+        ///「次へ」ボタン押下時、イベント
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
@@ -694,7 +669,7 @@ namespace AutoReportWinApp
         }
 
         /// <summary>
-        ///「前ページ移動」ボタン押下時、イベント
+        ///「前へ」ボタン押下時、イベント
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
