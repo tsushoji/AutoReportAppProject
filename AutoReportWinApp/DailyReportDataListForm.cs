@@ -442,9 +442,9 @@ namespace AutoReportWinApp
                         var reportData = new DailyReportEntity();
                         reportData.ControlNum = dailyReportData.ControlNum;
                         reportData.DateStr = dailyReportData.DateStr;
-                        reportData.ImplementationContent = dailyReportData.ImplementationContent;
-                        reportData.TomorrowPlan = dailyReportData.Task;
-                        reportData.Task = dailyReportData.TomorrowPlan;
+                        reportData.ImplementationContent = DailyReportEntity.ReplaceToNewLineStr(dailyReportData.ImplementationContent);
+                        reportData.TomorrowPlan = DailyReportEntity.ReplaceToNewLineStr(dailyReportData.Task);
+                        reportData.Task = DailyReportEntity.ReplaceToNewLineStr(dailyReportData.TomorrowPlan);
                         outputWeeklyReportDataList.Add(reportData);
                     }
                 }
