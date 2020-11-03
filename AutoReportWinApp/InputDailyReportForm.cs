@@ -67,16 +67,16 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonCreate_Click(object sender, EventArgs e)
         {
-            if (!this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text, DailyReportDataListForm.dailyReportDataList))
+            if (!Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text, DailyReportDataListForm.dailyReportDataList))
             {
                 switch (CreateDataMode)
                 {
                     case CreateDataMode.APPEND:
-                        this.AppendDailyReportData();
+                        AppendDailyReportData();
                         break;
 
                     case CreateDataMode.UPDATE:
-                        this.UpdateDailyReportData();
+                        UpdateDailyReportData();
                         break;
 
                     default:
@@ -92,7 +92,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonForDataList_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         /// <summary>
@@ -114,8 +114,11 @@ namespace AutoReportWinApp
                     dailyReport.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                     dailyReport.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                     DailyReportDataListForm.dailyReportDataList.Add(dailyReport);
+                    //追加
+                    var dailyReportDataListOrderByControlNum = DailyReportDataListForm.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
                     csv.Configuration.HasHeaderRecord = false;
-                    csv.WriteRecords(DailyReportDataListForm.dailyReportDataList);
+                    csv.WriteRecords(dailyReportDataListOrderByControlNum);
+                    //csv.WriteRecords(DailyReportDataListForm.dailyReportDataList);
                     DailyReportDataListForm.SetPageCountProperty(DailyReportDataListForm.dailyReportDataList);
                     if (DailyReportDataListForm.PageCount > 1)
                     {
@@ -127,7 +130,7 @@ namespace AutoReportWinApp
                 }
             }
             MessageBox.Show(Properties.Resources.I0001);
-            this.Close();
+            Close();
         }
 
         /// <summary>
@@ -142,7 +145,10 @@ namespace AutoReportWinApp
                 using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    foreach (var dailyReportData in DailyReportDataListForm.dailyReportDataList)
+                    //追加
+                    var dailyReportDataListOrderByControlNum = DailyReportDataListForm.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
+                    //foreach (var dailyReportData in DailyReportDataListForm.dailyReportDataList)
+                    foreach (var dailyReportData in dailyReportDataListOrderByControlNum)
                     {
                         var controlNum = Int32.Parse(dailyReportData.ControlNum);
                         //更新する管理番号は日報データリストフォームでセットした「CreateDataControlNum」プロパティーとする
@@ -160,7 +166,7 @@ namespace AutoReportWinApp
                     DailyReportDataListForm.SetPagingDailyReportDataToDataGridView(DailyReportDataListForm.dailyReportDataList);
                 }
                 MessageBox.Show(Properties.Resources.I0002);
-                this.Close();
+                Close();
             }
         }
 
