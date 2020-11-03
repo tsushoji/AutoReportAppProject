@@ -114,11 +114,9 @@ namespace AutoReportWinApp
                     dailyReport.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                     dailyReport.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                     DailyReportDataListForm.dailyReportDataList.Add(dailyReport);
-                    //追加
                     var dailyReportDataListOrderByControlNum = DailyReportDataListForm.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
                     csv.Configuration.HasHeaderRecord = false;
                     csv.WriteRecords(dailyReportDataListOrderByControlNum);
-                    //csv.WriteRecords(DailyReportDataListForm.dailyReportDataList);
                     DailyReportDataListForm.SetPageCountProperty(DailyReportDataListForm.dailyReportDataList);
                     if (DailyReportDataListForm.PageCount > 1)
                     {
@@ -145,9 +143,7 @@ namespace AutoReportWinApp
                 using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    //追加
                     var dailyReportDataListOrderByControlNum = DailyReportDataListForm.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
-                    //foreach (var dailyReportData in DailyReportDataListForm.dailyReportDataList)
                     foreach (var dailyReportData in dailyReportDataListOrderByControlNum)
                     {
                         var controlNum = Int32.Parse(dailyReportData.ControlNum);

@@ -703,25 +703,38 @@ namespace AutoReportWinApp
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
         private void ChangeAscendingOrder_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            switch (e.ColumnIndex)
+            if (DataGridView1.Rows.Count > 0)
             {
-                case (int)DataGridViewColumnIndex.CONTROL_NUM:
-                    this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
-                    SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
-                    break;
+                switch (e.ColumnIndex)
+                {
+                    case (int)DataGridViewColumnIndex.CONTROL_NUM:
+                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
 
-                case (int)DataGridViewColumnIndex.DATE_STR:
-                    this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => DateTime.Parse(value.DateStr)).ToList();
-                    SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
-                    break;
+                    case (int)DataGridViewColumnIndex.DATE_STR:
+                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => DateTime.Parse(value.DateStr)).ToList();
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
 
-                case (int)DataGridViewColumnIndex.IMPLEMENTATION_CONTENT:
-                case (int)DataGridViewColumnIndex.TOMMOROW_PLAN:
-                case (int)DataGridViewColumnIndex.TASK:
-                    break;
+                    case (int)DataGridViewColumnIndex.IMPLEMENTATION_CONTENT:
+                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.ImplementationContent).ToList();
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
 
-                default:
-                    break;
+                    case (int)DataGridViewColumnIndex.TOMMOROW_PLAN:
+                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.TomorrowPlan).ToList();
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
+
+                    case (int)DataGridViewColumnIndex.TASK:
+                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.Task).ToList();
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
     }
