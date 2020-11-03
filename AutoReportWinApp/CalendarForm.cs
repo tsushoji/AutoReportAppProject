@@ -26,14 +26,13 @@ namespace AutoReportWinApp
         }
 
         /// <summary>
-        /// カレンダーの日付が選択されたときのイベント
+        /// カレンダーフォームで日付が選択されたときのイベント
         /// </summary>
-        /// <remarks>入力日報フォームの「日付」項目に選択した日付文字列を出力</remarks>
+        /// <remarks>カレンダーフォームで選択された日付（文字列）を入力日報フォームの「日付」項目にセット</remarks>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">カレンダーイベントに関わる引数</param>
         private void MousePointer_DataSelected(object sender, DateRangeEventArgs e)
         {
-            // カレンダーフォームで取得した日付文字列を入力日報フォームの「日付」項目に入れる
             this.inputDailyReportForm.Controls[inputCalenderDataFormItemName].Text = monthCalendar1.SelectionRange.Start.Date.ToString(dateFormat);
             this.Close();
         }

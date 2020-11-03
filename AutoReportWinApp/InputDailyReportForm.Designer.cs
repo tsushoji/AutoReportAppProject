@@ -148,7 +148,7 @@
             this.buttonCreate.TabIndex = 9;
             this.buttonCreate.Text = "データ作成";
             this.buttonCreate.UseVisualStyleBackColor = true;
-            this.buttonCreate.Click += new System.EventHandler(this.ButtonCreateData_Click);
+            this.buttonCreate.Click += new System.EventHandler(this.ButtonCreate_Click);
             // 
             // buttonForDataList
             // 
@@ -161,7 +161,7 @@
             this.buttonForDataList.TabIndex = 10;
             this.buttonForDataList.Text = "データリストへ";
             this.buttonForDataList.UseVisualStyleBackColor = true;
-            this.buttonForDataList.Click += new System.EventHandler(this.ButtonToDailyReportDataListForm_Click);
+            this.buttonForDataList.Click += new System.EventHandler(this.ButtonForDataList_Click);
             // 
             // label5
             // 
