@@ -143,8 +143,7 @@ namespace AutoReportWinApp
                 using (var writer = new StreamWriter(writeFileStream, Encoding.GetEncoding(DailyReportDataListForm.WinCharCode)))
                 using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
                 {
-                    var dailyReportDataListOrderByControlNum = DailyReportDataListForm.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
-                    foreach (var dailyReportData in dailyReportDataListOrderByControlNum)
+                    foreach (var dailyReportData in DailyReportDataListForm.dailyReportDataList)
                     {
                         var controlNum = Int32.Parse(dailyReportData.ControlNum);
                         //更新する管理番号は日報データリストフォームでセットした「CreateDataControlNum」プロパティーとする
@@ -156,9 +155,10 @@ namespace AutoReportWinApp
                             dailyReportData.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                             dailyReportData.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                         }
-                        csv.WriteRecord(dailyReportData);
-                        csv.NextRecord();
                     }
+                    var dailyReportDataListOrderByControlNum = DailyReportDataListForm.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
+                    csv.Configuration.HasHeaderRecord = false;
+                    csv.WriteRecords(dailyReportDataListOrderByControlNum);
                     DailyReportDataListForm.SetPagingDailyReportDataToDataGridView(DailyReportDataListForm.dailyReportDataList);
                 }
                 MessageBox.Show(Properties.Resources.I0002);
