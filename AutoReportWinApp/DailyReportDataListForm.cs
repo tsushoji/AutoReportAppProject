@@ -701,34 +701,84 @@ namespace AutoReportWinApp
         /// </summary>
         /// <param name="sender">イベントを送信したオブジェクト</param>
         /// <param name="e">データグリッドビューイベントに関わる引数</param>
-        private void ChangeAscendingOrder_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void ChangeOrder_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (DataGridView1.Rows.Count > 0)
             {
                 switch (e.ColumnIndex)
                 {
                     case (int)DataGridViewColumnIndex.CONTROL_NUM:
-                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
+                        if (DataGridView1.Columns[0].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
+                        }
+                        else if (DataGridView1.Columns[0].HeaderCell.SortGlyphDirection == SortOrder.Descending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => Int32.Parse(value.ControlNum)).ToList();
+                        }
+                        else
+                        {
+                        }
                         SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
                         break;
 
                     case (int)DataGridViewColumnIndex.DATE_STR:
-                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => DateTime.Parse(value.DateStr)).ToList();
+                        if (DataGridView1.Columns[1].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => DateTime.Parse(value.DateStr)).ToList();
+                        }
+                        else if (DataGridView1.Columns[1].HeaderCell.SortGlyphDirection == SortOrder.Descending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => DateTime.Parse(value.DateStr)).ToList();
+                        }
+                        else
+                        {
+                        }
                         SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
                         break;
 
                     case (int)DataGridViewColumnIndex.IMPLEMENTATION_CONTENT:
-                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.ImplementationContent).ToList();
+                        if (DataGridView1.Columns[2].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.ImplementationContent).ToList();
+                        }
+                        else if (DataGridView1.Columns[2].HeaderCell.SortGlyphDirection == SortOrder.Descending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => value.ImplementationContent).ToList();
+                        }
+                        else
+                        {
+                        }
                         SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
                         break;
 
                     case (int)DataGridViewColumnIndex.TOMMOROW_PLAN:
-                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.TomorrowPlan).ToList();
+                        if (DataGridView1.Columns[3].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.TomorrowPlan).ToList();
+                        }
+                        else if (DataGridView1.Columns[3].HeaderCell.SortGlyphDirection == SortOrder.Descending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => value.TomorrowPlan).ToList();
+                        }
+                        else
+                        {
+                        }
                         SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
                         break;
 
                     case (int)DataGridViewColumnIndex.TASK:
-                        this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.Task).ToList();
+                        if (DataGridView1.Columns[4].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.Task).ToList();
+                        }
+                        else if (DataGridView1.Columns[4].HeaderCell.SortGlyphDirection == SortOrder.Descending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => value.Task).ToList();
+                        }
+                        else
+                        {
+                        }
                         SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
                         break;
 
