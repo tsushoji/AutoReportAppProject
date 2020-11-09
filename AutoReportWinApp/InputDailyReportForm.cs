@@ -67,16 +67,16 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonCreate_Click(object sender, EventArgs e)
         {
-            if (!this.Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text, DailyReportDataListForm.dailyReportDataList))
+            if (!Inputcheck(TextBox1Text, TextBox2Text, TextBox3Text, TextBox4Text, DailyReportDataListForm.dailyReportDataList))
             {
                 switch (CreateDataMode)
                 {
                     case CreateDataMode.APPEND:
-                        this.AppendDailyReportData();
+                        AppendDailyReportData();
                         break;
 
                     case CreateDataMode.UPDATE:
-                        this.UpdateDailyReportData();
+                        UpdateDailyReportData();
                         break;
 
                     default:
@@ -92,7 +92,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonForDataList_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         /// <summary>
@@ -114,8 +114,9 @@ namespace AutoReportWinApp
                     dailyReport.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                     dailyReport.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                     DailyReportDataListForm.dailyReportDataList.Add(dailyReport);
+                    var dailyReportDataListOrderByControlNum = DailyReportDataListForm.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
                     csv.Configuration.HasHeaderRecord = false;
-                    csv.WriteRecords(DailyReportDataListForm.dailyReportDataList);
+                    csv.WriteRecords(dailyReportDataListOrderByControlNum);
                     DailyReportDataListForm.SetPageCountProperty(DailyReportDataListForm.dailyReportDataList);
                     if (DailyReportDataListForm.PageCount > 1)
                     {
@@ -127,7 +128,7 @@ namespace AutoReportWinApp
                 }
             }
             MessageBox.Show(Properties.Resources.I0001);
-            this.Close();
+            Close();
         }
 
         /// <summary>
@@ -154,13 +155,14 @@ namespace AutoReportWinApp
                             dailyReportData.TomorrowPlan = DailyReportEntity.ReplaceToUserNewLineStr(TextBox3Text);
                             dailyReportData.Task = DailyReportEntity.ReplaceToUserNewLineStr(TextBox4Text);
                         }
-                        csv.WriteRecord(dailyReportData);
-                        csv.NextRecord();
                     }
+                    var dailyReportDataListOrderByControlNum = DailyReportDataListForm.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
+                    csv.Configuration.HasHeaderRecord = false;
+                    csv.WriteRecords(dailyReportDataListOrderByControlNum);
                     DailyReportDataListForm.SetPagingDailyReportDataToDataGridView(DailyReportDataListForm.dailyReportDataList);
                 }
                 MessageBox.Show(Properties.Resources.I0002);
-                this.Close();
+                Close();
             }
         }
 

@@ -31,11 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DailyReportDataListForm));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.controlNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.date = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.impContent = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.scheContent = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.task = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -61,6 +56,11 @@
             this.buttonMoveLastItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonAppendDailyReportData = new System.Windows.Forms.ToolStripButton();
+            this.controlNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.date = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.impContent = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.scheContent = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.task = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).BeginInit();
             this.bindingNavigator1.SuspendLayout();
@@ -87,37 +87,7 @@
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ClickCreateData_CellDoubleClick);
             this.dataGridView1.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DailyReportDataListFormDataGridView_CellMouseEnter);
             this.dataGridView1.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.DailyReportDataListFormDataGridView_CellMouseLeave);
-            // 
-            // controlNum
-            // 
-            this.controlNum.HeaderText = "管理番号";
-            this.controlNum.MinimumWidth = 6;
-            this.controlNum.Name = "controlNum";
-            this.controlNum.ReadOnly = true;
-            // 
-            // date
-            // 
-            this.date.HeaderText = "日付";
-            this.date.MinimumWidth = 6;
-            this.date.Name = "date";
-            // 
-            // impContent
-            // 
-            this.impContent.HeaderText = "実施内容";
-            this.impContent.MinimumWidth = 6;
-            this.impContent.Name = "impContent";
-            // 
-            // scheContent
-            // 
-            this.scheContent.HeaderText = "翌日予定";
-            this.scheContent.MinimumWidth = 6;
-            this.scheContent.Name = "scheContent";
-            // 
-            // task
-            // 
-            this.task.HeaderText = "課題";
-            this.task.MinimumWidth = 6;
-            this.task.Name = "task";
+            this.dataGridView1.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.ChangeOrder_ColumnHeaderMouseClick);
             // 
             // label4
             // 
@@ -327,7 +297,6 @@
             // 
             this.bindingNavigatorPositionItem.AccessibleName = "位置";
             this.bindingNavigatorPositionItem.AutoSize = false;
-            this.bindingNavigatorPositionItem.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
             this.bindingNavigatorPositionItem.Name = "bindingNavigatorPositionItem";
             this.bindingNavigatorPositionItem.Size = new System.Drawing.Size(50, 23);
             this.bindingNavigatorPositionItem.Text = "0";
@@ -373,6 +342,37 @@
             this.buttonAppendDailyReportData.Text = "日報データ新規追加";
             this.buttonAppendDailyReportData.Click += new System.EventHandler(this.ButtonAppendDailyReportData_Click);
             // 
+            // controlNum
+            // 
+            this.controlNum.HeaderText = "管理番号";
+            this.controlNum.MinimumWidth = 6;
+            this.controlNum.Name = "controlNum";
+            this.controlNum.ReadOnly = true;
+            // 
+            // date
+            // 
+            this.date.HeaderText = "日付";
+            this.date.MinimumWidth = 6;
+            this.date.Name = "date";
+            // 
+            // impContent
+            // 
+            this.impContent.HeaderText = "実施内容";
+            this.impContent.MinimumWidth = 6;
+            this.impContent.Name = "impContent";
+            // 
+            // scheContent
+            // 
+            this.scheContent.HeaderText = "翌日予定";
+            this.scheContent.MinimumWidth = 6;
+            this.scheContent.Name = "scheContent";
+            // 
+            // task
+            // 
+            this.task.HeaderText = "課題";
+            this.task.MinimumWidth = 6;
+            this.task.Name = "task";
+            // 
             // DailyReportDataListForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -416,11 +416,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button buttonOutputWeeklyReport;
         private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn controlNum;
-        private System.Windows.Forms.DataGridViewTextBoxColumn date;
-        private System.Windows.Forms.DataGridViewTextBoxColumn impContent;
-        private System.Windows.Forms.DataGridViewTextBoxColumn scheContent;
-        private System.Windows.Forms.DataGridViewTextBoxColumn task;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox1;
@@ -440,5 +435,10 @@
         private System.Windows.Forms.ToolStripButton buttonMovePreviousItemItem;
         private System.Windows.Forms.ToolStripButton buttonMoveNextItemItem;
         private System.Windows.Forms.ToolStripButton buttonMoveLastItem;
+        private System.Windows.Forms.DataGridViewTextBoxColumn controlNum;
+        private System.Windows.Forms.DataGridViewTextBoxColumn date;
+        private System.Windows.Forms.DataGridViewTextBoxColumn impContent;
+        private System.Windows.Forms.DataGridViewTextBoxColumn scheContent;
+        private System.Windows.Forms.DataGridViewTextBoxColumn task;
     }
 }

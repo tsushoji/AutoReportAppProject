@@ -24,6 +24,19 @@ namespace AutoReportWinApp
     }
 
     /// <summary>
+    /// データグリッドビューカラムインデックス番号
+    /// </summary>
+    /// <remarks>CONTROL_NUM：管理番号、DATE_STR：日付、IMPLEMENTATION_CONTENT：実施内容、TOMMOROW_PLAN：翌日予定、TASK：課題</remarks>
+    public enum DataGridViewColumnIndex
+    {
+        CONTROL_NUM,
+        DATE_STR,
+        IMPLEMENTATION_CONTENT,
+        TOMMOROW_PLAN,
+        TASK
+    }
+
+    /// <summary>
     /// 日報データリストフォームクラス
     /// </summary>
     /// <remarks>作成した日報データを表示するフォーム</remarks>
@@ -77,9 +90,9 @@ namespace AutoReportWinApp
         public DailyReportDataListForm()
         {
             InitializeComponent();
-            CsvDailyReportDataPath = this.GetCsvDailyReportDataPath();
+            CsvDailyReportDataPath = GetCsvDailyReportDataPath();
             this.dailyReportDataList = new List<DailyReportEntity>();
-            this.InitDailyReportDataReader(CsvDailyReportDataPath);
+            InitDailyReportDataReader(CsvDailyReportDataPath);
         }
 
         /// <summary>
@@ -136,7 +149,7 @@ namespace AutoReportWinApp
             var dailyReportList = new List<List<DailyReportEntity>>();
             var counter = 0;
             var dailyReportsByPageSize = new List<DailyReportEntity>();
-            this.SetPageCountProperty(dailyReports);
+            SetPageCountProperty(dailyReports);
             foreach (DailyReportEntity dailyReport in dailyReports)
             {
                 dailyReportsByPageSize.Add(dailyReport);
@@ -220,7 +233,7 @@ namespace AutoReportWinApp
                 inputDailyReportForm.CreateDataMode = CreateDataMode.APPEND;
                 if (this.dailyReportDataList.Count > 0)
                 {
-                    inputDailyReportForm.CreateDataControlNum = this.GetMaxControlNum(this.dailyReportDataList) + 1;
+                    inputDailyReportForm.CreateDataControlNum = GetMaxControlNum(this.dailyReportDataList) + 1;
                 }
                 else
                 {
@@ -253,7 +266,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void DailyReportDataListForm_Load(object sender, EventArgs e)
         {
-            this.ClearDataGridViewFocus();
+            ClearDataGridViewFocus();
         }
 
         /// <summary>
@@ -329,7 +342,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonOutputDailyReportData_Click(object sender, EventArgs e)
         {
-            this.OutputReportFile(OutputType.DAILY_REPORT_DATA);
+            OutputReportFile(OutputType.DAILY_REPORT_DATA);
         }
 
         /// <summary>
@@ -339,7 +352,7 @@ namespace AutoReportWinApp
         /// <param name="e">イベントに関わる引数</param>
         private void ButtonOutputWeeklyReport_Click(object sender, EventArgs e)
         {
-            this.OutputReportFile(OutputType.WEEKLY_REPORT);
+            OutputReportFile(OutputType.WEEKLY_REPORT);
         }
 
         /// <summary>
@@ -349,18 +362,18 @@ namespace AutoReportWinApp
         /// <param name="outputType">出力タイプ</param>
         private void OutputReportFile(OutputType outputType)
         {
-            if (!this.Inputcheck(outputType))
+            if (!Inputcheck(outputType))
             {
                 switch (outputType)
                 {
                     case OutputType.DAILY_REPORT_DATA:
-                        this.OutputDailyReportData();
+                        OutputDailyReportData();
                         break;
 
                     case OutputType.WEEKLY_REPORT:
-                        if (!this.ValidateWeeklyReport())
+                        if (!ValidateWeeklyReport())
                         {
-                            this.OutputWeeklyReport();
+                            OutputWeeklyReport();
                         }
                         break;
 
@@ -635,7 +648,7 @@ namespace AutoReportWinApp
         {
             CurrentDailyReportDataIndex = 0;
             SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
-            this.ClearDataGridViewFocus();
+            ClearDataGridViewFocus();
         }
 
         /// <summary>
@@ -650,7 +663,7 @@ namespace AutoReportWinApp
                 CurrentDailyReportDataIndex = PageCount - 1;
             }
             SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
-            this.ClearDataGridViewFocus();
+            ClearDataGridViewFocus();
         }
 
         /// <summary>
@@ -665,7 +678,7 @@ namespace AutoReportWinApp
                 CurrentDailyReportDataIndex++;
             }
             SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
-            this.ClearDataGridViewFocus();
+            ClearDataGridViewFocus();
         }
 
         /// <summary>
@@ -680,7 +693,84 @@ namespace AutoReportWinApp
                 CurrentDailyReportDataIndex--;
             }
             SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
-            this.ClearDataGridViewFocus();
+            ClearDataGridViewFocus();
+        }
+
+        /// <summary>
+        ///データグリッドビューヘッダークリック時、イベント
+        /// </summary>
+        /// <param name="sender">イベントを送信したオブジェクト</param>
+        /// <param name="e">データグリッドビューイベントに関わる引数</param>
+        private void ChangeOrder_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (DataGridView1.Rows.Count > 0)
+            {
+                switch (e.ColumnIndex)
+                {
+                    case (int)DataGridViewColumnIndex.CONTROL_NUM:
+                        if (DataGridView1.Columns[(int)DataGridViewColumnIndex.CONTROL_NUM].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => Int32.Parse(value.ControlNum)).ToList();
+                        }
+                        else
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => Int32.Parse(value.ControlNum)).ToList();
+                        }
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
+
+                    case (int)DataGridViewColumnIndex.DATE_STR:
+                        if (DataGridView1.Columns[(int)DataGridViewColumnIndex.DATE_STR].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => DateTime.Parse(value.DateStr)).ToList();
+                        }
+                        else
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => DateTime.Parse(value.DateStr)).ToList();
+                        }
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
+
+                    case (int)DataGridViewColumnIndex.IMPLEMENTATION_CONTENT:
+                        if (DataGridView1.Columns[(int)DataGridViewColumnIndex.IMPLEMENTATION_CONTENT].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.ImplementationContent).ToList();
+                        }
+                        else
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => value.ImplementationContent).ToList();
+                        }
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
+
+                    case (int)DataGridViewColumnIndex.TOMMOROW_PLAN:
+                        if (DataGridView1.Columns[(int)DataGridViewColumnIndex.TOMMOROW_PLAN].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.TomorrowPlan).ToList();
+                        }
+                        else
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => value.TomorrowPlan).ToList();
+                        }
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
+
+                    case (int)DataGridViewColumnIndex.TASK:
+                        if (DataGridView1.Columns[(int)DataGridViewColumnIndex.TASK].HeaderCell.SortGlyphDirection == SortOrder.Ascending)
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderBy(value => value.Task).ToList();
+                        }
+                        else
+                        {
+                            this.dailyReportDataList = this.dailyReportDataList.OrderByDescending(value => value.Task).ToList();
+                        }
+                        SetPagingDailyReportDataToDataGridView(this.dailyReportDataList);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
     }
 }
