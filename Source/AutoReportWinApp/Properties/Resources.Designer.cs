@@ -61,6 +61,16 @@ namespace AutoReportWinApp.Properties {
         }
         
         /// <summary>
+        ///   (アイコン) に類似した型 System.Drawing.Icon のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Icon DailyReport {
+            get {
+                object obj = ResourceManager.GetObject("DailyReport", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   {FIRSTARG}が入力されていません。 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string E0001 {
